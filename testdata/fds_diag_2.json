@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "device_id": "Hailo_ProfiLineFreshL_NODE-52",
+      "generic": {
+        "last_service": "2021-05-27T10:50:47.000Z"
+      },
+      "device_type_specific": {
+        "expected_next_service": "2021-07-24T12:11:12.645Z",
+        "expected_filling_level": 1
+      }
+    }
+  ]
+}
+
