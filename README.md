@@ -14,7 +14,7 @@ The app needs environment variables and database tables for configuration.
 The `APPNAME` MUST be set to `hailo`. Some resources use this name to identify the app inside an Eliona environment. For running as a Docker container inside an Eliona environment, the `APPNAME` have to set in the [Dockerfile](Dockerfile). If the app runs outside an Eliona environment the `APPNAME` must be set explicitly.
 
 ```bash
-export APPNAME=weather # For running in Eliona environment set app name in Dockerfile
+export APPNAME=hailo # For running in Eliona environment set app name in Dockerfile
 ```
 
 #### CONNECTION_STRING
