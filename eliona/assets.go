@@ -61,7 +61,7 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
 		Name:                  specification.Generic.Model,
 		AssetTypeId:           assetType(specification),
-		Description:           specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCatecory,
+		Description:           specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory,
 	})
 	if err != nil {
 		return err

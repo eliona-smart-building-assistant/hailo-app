@@ -63,7 +63,7 @@ type Spec struct {
 		Channel             string `json:"channel"`
 		ComponentIdList     []Spec `json:"component_id_list"`
 		TotalCombinedVolume int    `json:"total_combined_volume"`
-		ContentCatecory     string `json:"content_category"`
+		ContentCategory     string `json:"content_category"`
 	} `json:"device_type_specific"`
 }
 
@@ -114,8 +114,10 @@ type Diag struct {
 	ComponentDiagnostics []Diag `json:"component_diagnostics"`
 }
 
+// tokens holds generated tokens for further use until they come invalid
 var tokens sync.Map
 
+// GetSpecs reads the specification for all Hailo smart devices from eliona endpoint
 func GetSpecs(configuration conf.Config) (Specs, error) {
 	request, err := http.NewRequestWithBearer(
 		configuration.FdsConfig.FdsServer+FdsSpecificationPath,
@@ -133,6 +135,7 @@ func GetSpecs(configuration conf.Config) (Specs, error) {
 	return specs, nil
 }
 
+// GetDiag reads the diagnostic data for the given device id
 func GetDiag(configuration conf.Config, deviceId string) (Diag, error) {
 	request, err := http.NewRequestWithBearer(
 		configuration.FdsConfig.FdsServer+FdsDiagnosticsPath+FdsIdParam+deviceId,
@@ -149,6 +152,7 @@ func GetDiag(configuration conf.Config, deviceId string) (Diag, error) {
 	return diagnostics.Data[0], nil
 }
 
+// GetStatus reads the status data for the given device id
 func GetStatus(configuration conf.Config, deviceId string) (Status, error) {
 	request, err := http.NewRequestWithBearer(
 		configuration.FdsConfig.FdsServer+FdsStatusPath+FdsIdParam+deviceId,
@@ -171,6 +175,7 @@ func (status Status) IsStation() bool {
 	return len(status.DeviceTypeSpecific.CompStatuses) > 0
 }
 
+// isTokenValid checks if the given token is valid
 func isTokenValid(token string) bool {
 	currentTime := time.Now().Unix()
 
@@ -198,6 +203,7 @@ func isTokenValid(token string) bool {
 	return true
 }
 
+// getToken creates a new token or delivers a previous token until this token is valid
 func getToken(configuration conf.Config) string {
 	token, found := tokens.Load(configuration.Id)
 	if found {
@@ -210,6 +216,7 @@ func getToken(configuration conf.Config) string {
 	return token.(string)
 }
 
+// authenticate creates a new token
 func authenticate(configuration conf.Config) (string, error) {
 
 	log.Info("Hailo", "Create new Authentication token")
@@ -238,4 +245,8 @@ func decodeBase64(b64 string) string {
 		return ""
 	}
 	return string(plain)
+}
+
+func encodeBase64(plain string) string {
+	return base64.StdEncoding.EncodeToString([]byte(plain))
 }

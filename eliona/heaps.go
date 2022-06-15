@@ -176,25 +176,30 @@ func UpsertHeapForBin(config conf.Config, status hailo.Status, diag hailo.Diag) 
 }
 
 // 2021-01-26T09:16:16.000Z
-func parseTime(iso8601Time string) time.Time {
-	if iso8601Time == "" {
+func parseTime(iso string) time.Time {
+	if iso == "" {
 		return time.Now()
 	}
-	t, err := time.Parse(time.RFC3339Nano, iso8601Time)
+	t, err := time.Parse(time.RFC3339Nano, iso)
 	if err != nil {
-		log.Warn("Hailo", "Error while converting ISO 8601 time to unix time %v, in: %s", err, iso8601Time)
+		log.Warn("Hailo", "Error while converting ISO 8601 time to unix time %v, in: %s", err, iso)
 		return time.Now()
 	}
 	return t
 }
 
-func parseTimeToDays(iso8601Time string) float64 {
-	return math.Round((parseTimeToHours(iso8601Time)*100)/24) / 100
+func parseToIsoTime(unix int64) string {
+	t := time.Unix(unix, 0)
+	return t.UTC().Format("2006-01-02T15:04:05.006Z")
 }
 
-func parseTimeToHours(iso8601Time string) float64 {
+func parseTimeToDays(iso string) float64 {
+	return math.Round((parseTimeToHours(iso)*100)/24) / 100
+}
+
+func parseTimeToHours(iso string) float64 {
 	now := time.Now().Unix()
-	dst := parseTime(iso8601Time).Unix()
+	dst := parseTime(iso).Unix()
 	rst := 0.0
 	if now > dst {
 		rst = (float64)((now - dst) / (60 * 60))
