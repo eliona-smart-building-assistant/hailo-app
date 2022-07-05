@@ -16,7 +16,7 @@
 package eliona
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/assets"
+	"github.com/eliona-smart-building-assistant/go-eliona/assetdb"
 	"github.com/eliona-smart-building-assistant/go-eliona/db"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
@@ -56,7 +56,7 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	log.Debug("hailo", "Creating new asset for project %s and specification %s.", projectId, specification.DeviceId)
 
 	// If no asset id exists for project and configuration, create a new one
-	newId, err := assets.UpsertAsset(db.Pool(), assets.Asset{
+	newId, err := assetdb.UpsertAsset(db.Pool(), assetdb.Asset{
 		ProjectId:             projectId,
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
 		Name:                  specification.Generic.Model,

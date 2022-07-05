@@ -16,7 +16,7 @@
 package eliona
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/assets"
+	"github.com/eliona-smart-building-assistant/go-eliona/assetdb"
 	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/db"
 )
@@ -30,24 +30,24 @@ const (
 // InitAssetTypes creates the necessary asset types
 func InitAssetTypes(connection db.Connection) error {
 
-	err := assets.UpsertAssetType(connection, assets.AssetType{
+	err := assetdb.UpsertAssetType(connection, assetdb.AssetType{
 		// Hailo FDS Bin               | f      | Hailo             | {"de": "FDS Web-API from Halio", "en": "Recycling station using FDS Web-API from Halio"}                        | eliona.de | trash
 		Name:             BinAssetType,
 		Custom:           false,
 		Vendor:           "Hailo",
-		Translation:      &assets.Translation{German: "FDS Web-API from Hailo", English: "Recycling station using FDS Web-API from Hailo"},
+		Translation:      &assetdb.Translation{German: "FDS Web-API from Hailo", English: "Recycling station using FDS Web-API from Hailo"},
 		DocumentationUrl: "https://www.hailodigitalhub.de/",
 		Icon:             "trash",
-		Attributes: []assets.AssetTypeAttribute{
+		Attributes: []assetdb.AssetTypeAttribute{
 			// Hailo FDS Bin               | device-status   | openings      |         | t      | {"de": "Öffnungen seit Leerung", "en": "Openings since emptying"}      | {device_type_specific,last_empty_count}       |
 			{
 				Name:          "openings",
 				AttributeType: "device-status",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Öffnungen seit Leerung", English: "Openings since emptying"},
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Translation:   &assetdb.Translation{German: "Öffnungen seit Leerung", English: "Openings since emptying"},
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 				Precision: common.Ptr(int16(0)),
@@ -56,11 +56,11 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "bat_level",
 				AttributeType: "battery-voltage",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Batteriestand", English: "Battery Level"},
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Translation:   &assetdb.Translation{German: "Batteriestand", English: "Battery Level"},
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -68,28 +68,28 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "volume",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Gesamtvolumen", English: "Total Volume"},
+				Translation:   &assetdb.Translation{German: "Gesamtvolumen", English: "Total Volume"},
 				Unit:          "l",
 			},
 			// Hailo FDS Bin               | device-status   | alarm         |         | t      | {"de": "Alarm", "en": "Alarm"}                                        | {device_type_specific,bin_alarm}       |
 			{
 				Name:          "alarm",
 				AttributeType: "device-status",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Alarm", English: "Alarm"},
+				Translation:   &assetdb.Translation{German: "Alarm", English: "Alarm"},
 			},
 			// Hailo FDS Bin               | device-status   | totalopenings |         | t      | {"de": "Tolal Öffnungen", "en": "Total Openings"}                      | {device_type_specific,inputs_count}       |
 			{
 				Name:          "totalopenings",
 				AttributeType: "device-status",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Total Öffnungen", English: "Total Openings"},
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Translation:   &assetdb.Translation{German: "Total Öffnungen", English: "Total Openings"},
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -97,12 +97,12 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "volumepercent",
 				AttributeType: "level",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Füllstand", English: "Fill Level"},
+				Translation:   &assetdb.Translation{German: "Füllstand", English: "Fill Level"},
 				Unit:          "%",
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -110,26 +110,26 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "exp_percent",
 				AttributeType: "device-info",
-				Subtype:       assets.StatusSubtype,
+				Subtype:       assetdb.StatusSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Erwarteter Füllstand Leerung", English: "Expected fill level emptying"},
+				Translation:   &assetdb.Translation{German: "Erwarteter Füllstand Leerung", English: "Expected fill level emptying"},
 				Unit:          "%",
 			},
 			// Hailo FDS Bin               | device-info     | reg_date      | info    | t      | {"de": "Registrationsdatum", "en": "Registration Date"}        | {generic,registration_date}              |
 			{
 				Name:          "reg_date",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Registrationsdatum", English: "Registration Date"},
+				Translation:   &assetdb.Translation{German: "Registrationsdatum", English: "Registration Date"},
 			},
 			// Hailo FDS Bin               | device-info     | lastclean     |         | t      | {"de": "Letzte Leerung", "en": "Last emptying"}                 | {device_type_specific,last_service}              | d
 			{
 				Name:          "lastclean",
 				AttributeType: "device-info",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Letzte Leerung", English: "Last emptying"},
+				Translation:   &assetdb.Translation{German: "Letzte Leerung", English: "Last emptying"},
 				Unit:          "d",
 				Precision:     common.Ptr(int16(0)),
 			},
@@ -137,9 +137,9 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "time",
 				AttributeType: "device-info",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Nächste Leerung", English: "Next emptying"},
+				Translation:   &assetdb.Translation{German: "Nächste Leerung", English: "Next emptying"},
 				Unit:          "d",
 				Precision:     common.Ptr(int16(0)),
 			},
@@ -147,9 +147,9 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "last_contact",
 				AttributeType: "device-info",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Letzter Kontakt", English: "Last Contact"},
+				Translation:   &assetdb.Translation{German: "Letzter Kontakt", English: "Last Contact"},
 				Unit:          "h",
 				Precision:     common.Ptr(int16(0)),
 			},
@@ -160,32 +160,32 @@ func InitAssetTypes(connection db.Connection) error {
 	}
 
 	// Hailo FDS Recycling Station | f      | Hailo             | {"de": "Recycling Station über FDS Web-API from Halio", "en": "Recycling station using FDS Web-API from Halio"} | eliona.de | trash
-	err = assets.UpsertAssetType(connection, assets.AssetType{
+	err = assetdb.UpsertAssetType(connection, assetdb.AssetType{
 		Name:             RecyclingStationAssetType,
 		Custom:           false,
 		Vendor:           "Hailo",
-		Translation:      &assets.Translation{German: "Recycling Station über FDS Web-API from Hailo", English: "Recycling station using FDS Web-API from Hailo"},
+		Translation:      &assetdb.Translation{German: "Recycling Station über FDS Web-API from Hailo", English: "Recycling station using FDS Web-API from Hailo"},
 		DocumentationUrl: "https://www.hailodigitalhub.de/",
 		Icon:             "trash",
-		Attributes: []assets.AssetTypeAttribute{
+		Attributes: []assetdb.AssetTypeAttribute{
 			// Hailo FDS Recycling Station | device-info     | reg_date      | info    | t      | {"de": "Registrationsdatum", "en": "Registration Date"}        | {generic,registration_date}               |
 			{
 				Name:          "reg_date",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Registrationsdatum", English: "Registration Date"},
+				Translation:   &assetdb.Translation{German: "Registrationsdatum", English: "Registration Date"},
 			},
 			// Hailo FDS Recycling Station | battery-voltage | bat_level     |         | t      | {"de": "Durchschnittlicher Batteriestand", "en": "Average Battery Level"}  | {device_type_specific,average_battery_level}   | %
 			{
 				Name:          "bat_level",
 				AttributeType: "battery-voltage",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Durchschnittlicher Batteriestand", English: "Average Battery Level"},
+				Translation:   &assetdb.Translation{German: "Durchschnittlicher Batteriestand", English: "Average Battery Level"},
 				Unit:          "%",
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -193,9 +193,9 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "last_contact",
 				AttributeType: "device-info",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Letzter Kontakt", English: "Last Contact"},
+				Translation:   &assetdb.Translation{German: "Letzter Kontakt", English: "Last Contact"},
 				Unit:          "h",
 				Precision:     common.Ptr(int16(0)),
 			},
@@ -203,20 +203,20 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "volume",
 				AttributeType: "device-info",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Kombiniertes Gesamtvolumen", English: "Total Combined Volume"},
+				Translation:   &assetdb.Translation{German: "Kombiniertes Gesamtvolumen", English: "Total Combined Volume"},
 				Unit:          "l",
 			},
 			// Hailo FDS Recycling Station | device-status   | totalopenings |         | t      | {"de": "Total Öffnungen kombiniert", "en": "Total Combined Openings"}    | {device_type_specific,total_inputs_count}    |
 			{
 				Name:          "totalopenings",
 				AttributeType: "device-status",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Total Öffnungen kombiniert", English: "Total Combined Openings"},
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Translation:   &assetdb.Translation{German: "Total Öffnungen kombiniert", English: "Total Combined Openings"},
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -224,12 +224,12 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "volumepercent",
 				AttributeType: "level",
-				Subtype:       assets.InputSubtype,
+				Subtype:       assetdb.InputSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Durchschnittlicher Füllstand", English: "Average Fill Level"},
+				Translation:   &assetdb.Translation{German: "Durchschnittlicher Füllstand", English: "Average Fill Level"},
 				Unit:          "%",
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -240,45 +240,45 @@ func InitAssetTypes(connection db.Connection) error {
 	}
 
 	// Hailo Digital Hub           | f      | Hailo Digital Hub | {"de": "The Web-API from Hailo Digital Hub"}                                                                    |          | trash
-	err = assets.UpsertAssetType(connection, assets.AssetType{
+	err = assetdb.UpsertAssetType(connection, assetdb.AssetType{
 		Name:             DigitalHubAssetType,
 		Custom:           false,
 		Vendor:           "Hailo",
-		Translation:      &assets.Translation{German: "Web-API von Hailo Digital Hub", English: "The Web-API from Hailo Digital Hub"},
+		Translation:      &assetdb.Translation{German: "Web-API von Hailo Digital Hub", English: "The Web-API from Hailo Digital Hub"},
 		DocumentationUrl: "https://www.hailodigitalhub.de/",
 		Icon:             "trash",
-		Attributes: []assets.AssetTypeAttribute{
+		Attributes: []assetdb.AssetTypeAttribute{
 			// Hailo Digital Hub           | device-info     | lastclean     |         | t      |                                       | {lastclean}                                       |
 			{
 				Name:          "lastclean",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
 			},
 			// Hailo Digital Hub           | device-info     | time          |         | t      |                                       | {forecast,time}                                       |
 			{
 				Name:          "time",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
 			},
 			// Hailo Digital Hub           | device-info     | rssi          | rfstat  | t      |                                           | {rssi}                                   |
 			{
 				Name:          "rssi",
 				AttributeType: "device-info",
-				Subtype:       assets.StatusSubtype,
+				Subtype:       assetdb.StatusSubtype,
 				Enable:        true,
 			},
 			// Hailo Digital Hub           | battery-voltage | voltage       | status  | t      | {"de": "Batteriespannung", "en": "Battery Voltage"}      | {voltage}                    | V
 			{
 				Name:          "voltage",
 				AttributeType: "battery-voltage",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Batteriespannung", English: "Battery Voltage"},
+				Translation:   &assetdb.Translation{German: "Batteriespannung", English: "Battery Voltage"},
 				Unit:          "V",
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 				Precision: common.Ptr(int16(2)),
@@ -287,21 +287,21 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "volume",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Volumen", English: "Volume"},
+				Translation:   &assetdb.Translation{German: "Volumen", English: "Volume"},
 				Precision:     common.Ptr(int16(2)),
 			},
 			// Hailo Digital Hub           | level           | volumepercent |         | t      | {"de": "Volumen", "en": "Volume"}          | {volumepercent}                                  | %
 			{
 				Name:          "volumepercent",
 				AttributeType: "level",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Volumen", English: "Volume"},
+				Translation:   &assetdb.Translation{German: "Volumen", English: "Volume"},
 				Unit:          "%",
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -309,11 +309,11 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "totalopenings",
 				AttributeType: "device-status",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Öffnungen", English: "Openings"},
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Translation:   &assetdb.Translation{German: "Öffnungen", English: "Openings"},
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -321,10 +321,10 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "percent",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Pipeline: assets.Pipeline{
-					Mode:   assets.AveragePipelineMode,
+				Pipeline: assetdb.Pipeline{
+					Mode:   assetdb.AveragePipelineMode,
 					Raster: "{M15,H1,DAY}",
 				},
 			},
@@ -332,9 +332,9 @@ func InitAssetTypes(connection db.Connection) error {
 			{
 				Name:          "closed",
 				AttributeType: "device-info",
-				Subtype:       assets.InfoSubtype,
+				Subtype:       assetdb.InfoSubtype,
 				Enable:        true,
-				Translation:   &assets.Translation{German: "Geschlossen", English: "Closed"},
+				Translation:   &assetdb.Translation{German: "Geschlossen", English: "Closed"},
 			},
 		},
 	})

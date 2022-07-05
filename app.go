@@ -16,7 +16,7 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/apps"
+	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
 	"hailo/eliona"
@@ -66,7 +66,7 @@ func collectData() {
 		// Runs the ReadNode. If the current node is currently running, skip the execution
 		// After the execution sleeps the configured timeout. During this timeout no further
 		// process for this config (appId) is started to read the data.
-		apps.RunOnce(func() {
+		common.RunOnce(func() {
 
 			log.Info("Hailo", "Collecting %d started", config.Id)
 
