@@ -81,7 +81,7 @@ func GetAssetId(confId int, projId string, deviceId string) *int {
 	return assetId
 }
 
-func InsertAsset(confId int, projId string, deviceId string, assetId int) error {
+func InsertAsset(confId int, projId string, deviceId string, assetId int32) error {
 	return db.Exec(db.Pool(), "insert into hailo.asset (config_id, device_id, proj_id, asset_id) values ($1, $2, $3, $4)",
 		confId,
 		deviceId,

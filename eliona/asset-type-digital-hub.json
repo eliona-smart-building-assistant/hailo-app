@@ -1,0 +1,123 @@
+{
+	"attributes": [
+		{
+			"enable": true,
+			"name": "lastclean",
+			"subtype": "info",
+			"type": "device-info"
+		},
+		{
+			"enable": true,
+			"name": "time",
+			"subtype": "info",
+			"type": "device-info"
+		},
+		{
+			"enable": true,
+			"name": "rssi",
+			"subtype": "status",
+			"type": "device-info"
+		},
+		{
+			"enable": true,
+			"name": "voltage",
+			"pipeline": {
+				"mode": "avg",
+				"raster": [
+					"M15",
+					"H1",
+					"DAY"
+				]
+			},
+			"precision": 2,
+			"subtype": "info",
+			"translation": {
+				"de": "Batteriespannung",
+				"en": "Battery Voltage"
+			},
+			"type": "battery-voltage",
+			"unit": "V"
+		},
+		{
+			"enable": true,
+			"name": "volume",
+			"precision": 2,
+			"subtype": "info",
+			"translation": {
+				"de": "Volumen",
+				"en": "Volume"
+			},
+			"type": "device-info"
+		},
+		{
+			"enable": true,
+			"name": "volumepercent",
+			"pipeline": {
+				"mode": "avg",
+				"raster": [
+					"M15",
+					"H1",
+					"DAY"
+				]
+			},
+			"subtype": "info",
+			"translation": {
+				"de": "Volumen",
+				"en": "Volume"
+			},
+			"type": "level",
+			"unit": "%"
+		},
+		{
+			"enable": true,
+			"name": "totalopenings",
+			"pipeline": {
+				"mode": "avg",
+				"raster": [
+					"M15",
+					"H1",
+					"DAY"
+				]
+			},
+			"subtype": "info",
+			"translation": {
+				"de": "Öffnungen",
+				"en": "Openings"
+			},
+			"type": "device-status"
+		},
+		{
+			"enable": true,
+			"name": "percent",
+			"pipeline": {
+				"mode": "avg",
+				"raster": [
+					"M15",
+					"H1",
+					"DAY"
+				]
+			},
+			"subtype": "info",
+			"type": "device-info"
+		},
+		{
+			"enable": true,
+			"name": "closed",
+			"subtype": "info",
+			"translation": {
+				"de": "Geschlossen",
+				"en": "Closed"
+			},
+			"type": "device-info"
+		}
+	],
+	"custom": true,
+	"icon": "trash",
+	"name": "Hailo Digital Hub",
+	"translation": {
+		"de": "Web-API von Hailo Digital Hub",
+		"en": "The Web-API from Hailo Digital Hub"
+	},
+	"urldoc": "https://www.hailodigitalhub.de/",
+	"vendor": "Hailo"
+}

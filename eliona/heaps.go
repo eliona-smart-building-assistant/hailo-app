@@ -16,8 +16,9 @@
 package eliona
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/assetdb"
-	"github.com/eliona-smart-building-assistant/go-eliona/db"
+	"github.com/eliona-smart-building-assistant/go-eliona/api"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
 	"hailo/hailo"
@@ -50,13 +51,13 @@ type deviceHeapData struct {
 	Volume           int    `json:"volume"`
 }
 
-func upsertHeap[T any](subtype assetdb.Subtype, time time.Time, assetId int, data T) error {
-	var statusHeap assetdb.Heap[T]
+func upsertHeap(subtype api.HeapSubtype, time time.Time, assetId int32, data any) error {
+	var statusHeap api.Heap
 	statusHeap.Subtype = subtype
-	statusHeap.TimeStamp = time
+	statusHeap.Timestamp = &time
 	statusHeap.AssetId = assetId
-	statusHeap.Data = data
-	err := assetdb.UpsertHeapIfAssetExists(db.Pool(), statusHeap)
+	statusHeap.Data = common.StructToMap(data)
+	err := asset.UpsertHeapIfAssetExists[any](statusHeap)
 	if err != nil {
 		log.Error("Hailo", "Error during writing heap: %v", err)
 		return err
@@ -67,9 +68,9 @@ func upsertHeap[T any](subtype assetdb.Subtype, time time.Time, assetId int, dat
 func upsertHeapForDevice(config conf.Config, projectId string, spec hailo.Spec) error {
 	log.Debug("Hailo", "Upsert Heap for device: config %d and device '%s'", config.Id, spec.DeviceId)
 	return upsertHeap(
-		assetdb.InfoSubtype,
+		api.INFO,
 		parseTime(spec.Generic.RegistrationDate),
-		*conf.GetAssetId(config.Id, projectId, spec.DeviceId),
+		int32(*conf.GetAssetId(config.Id, projectId, spec.DeviceId)),
 		deviceHeapData{RegistrationDate: spec.Generic.RegistrationDate, Volume: binVolume(spec)},
 	)
 }
@@ -95,9 +96,9 @@ func UpsertHeapForStation(config conf.Config, status hailo.Status) error {
 		log.Debug("Hailo", "Upsert Heap for station: config %d and station '%s'", config.Id, status.DeviceId)
 		lastContact := parseTimeToHours(status.Generic.LastContact)
 		err := upsertHeap(
-			assetdb.InputSubtype,
+			api.INPUT,
 			parseTime(status.Generic.LastContact),
-			*conf.GetAssetId(config.Id, projectId, status.DeviceId),
+			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
 			stationHeapData{
 				int(status.DeviceTypeSpecific.AverageBatteryLevel * 100),
 				lastContact,
@@ -140,9 +141,9 @@ func UpsertHeapForBin(config conf.Config, status hailo.Status, diag hailo.Diag) 
 
 		lastContact := parseTimeToHours(status.Generic.LastContact)
 		err := upsertHeap(
-			assetdb.InputSubtype,
+			api.INPUT,
 			parseTime(status.Generic.LastContact),
-			*conf.GetAssetId(config.Id, projectId, status.DeviceId),
+			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
 			binHeapData{
 				int(status.DeviceTypeSpecific.BatteryLevel * 100),
 				status.DeviceTypeSpecific.LastEmptyCount,
@@ -161,9 +162,9 @@ func UpsertHeapForBin(config conf.Config, status hailo.Status, diag hailo.Diag) 
 		}
 
 		err = upsertHeap(
-			assetdb.StatusSubtype,
+			api.STATUS,
 			parseTime(status.Generic.LastContact),
-			*conf.GetAssetId(config.Id, projectId, status.DeviceId),
+			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
 			statusHeapData{int(diag.DeviceTypeSpecific.ExpectedFillingLevel * 100)},
 		)
 		if err != nil {
