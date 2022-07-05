@@ -41,18 +41,18 @@ The app requires configuration data that remains in the database. To do this, th
 
 The database table `hailo.config` contains Hailo FDS endpoints. Each row stands for one endpoint with configurable timeouts and polling intervals. This table should be editable by the Eliona frontend. The table is filled during the initialization to demonstrate the configuration. This demo data contains no real endpoint and must be change for proper working.  
 
-| Column          | Description                                                                        |
-|-----------------|:-----------------------------------------------------------------------------------|
-| app_id          | Id to identify the configured endpoint (automatically by sequence)                 |
-| config          | JSON string to configure the endpoint (see below)                                  |
-| enable          | Flag to enable or disable the endpoint                                             |
-| description     | Description of the endpoint (optional)                                             |
-| asset_id        | Id of an parent asset with groups all device assets (optional)                     |
-| interval_sec    | Interval in seconds for collecting data from endpoint                              |
-| auth_timeout    | Timeout in seconds for authentication server (default `5`s)                        |
-| request_timeout | Timeout in seconds for FDS server (default `120`s)                                 |
-| active          | Set to `true` by the app when running and to `false` when app is stopped           |
-| proj_ids        | List of Eliona project ids for which this endpoint should collect data (see below) |
+| Column            | Description                                                                        |
+|-------------------|:-----------------------------------------------------------------------------------|
+| `app_id`          | Id to identify the configured endpoint (automatically by sequence)                 |
+| `config`          | JSON string to configure the endpoint (see below)                                  |
+| `enable`          | Flag to enable or disable the endpoint                                             |
+| `description`     | Description of the endpoint (optional)                                             |
+| `asset_id`        | Id of an parent asset with groups all device assets (optional)                     |
+| `interval_sec`    | Interval in seconds for collecting data from endpoint                              |
+| `auth_timeout`    | Timeout in seconds for authentication server (default `5`s)                        |
+| `request_timeout` | Timeout in seconds for FDS server (default `120`s)                                 |
+| `active`          | Set to `true` by the app when running and to `false` when app is stopped           |
+| `proj_ids`        | List of Eliona project ids for which this endpoint should collect data (see below) |
 
 The `config` column have to contain a JSON to configure the Hailo FDS endpoint:
 
@@ -74,6 +74,13 @@ Insert in the `proj_ids` column all Eliona project ids for which the endpoint sh
 The table `hailo.asset` maps each Hailo smart device to an Eliona asset. For different Eliona projects different assets are used. The app collect and writes data separate for each configured project (see column `proj_ids` above).
 
 The mapping is created automatically by the app. So this table does not necessarily have to be editable via the frontend or displayed in the frontend.
+
+| Column      | Description                                                                       |
+|-------------|:----------------------------------------------------------------------------------|
+| `config_id` | References the configured endpoint (column `app_id` in table `hailo.config`)      |
+| `device_id` | References to the Hailo smart device (`device_id` from Hailo Smart Hub)           |
+| `asset_id`  | References the asset id from Eliona an maps the device id to an Eliona asset      |
+| `proj_id`   | The project id for which the Eliona asset is created (see column `proj_ids` above |
 
 If specification of a Hailo smart device is read (at the first time or if new devices are added later) the app looks if there is already a mapping. If so, the app uses the mapped asset id for writing the heap data. If not, the app creates a new Eliona asset or updates an existing one and inserts the mapping in this table for further use.
 

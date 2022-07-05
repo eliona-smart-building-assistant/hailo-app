@@ -3,7 +3,7 @@ module hailo
 go 1.18
 
 require (
-	github.com/eliona-smart-building-assistant/go-eliona v0.1.22-alpha
+	github.com/eliona-smart-building-assistant/go-eliona v1.0.2-beta.0
 	github.com/stretchr/testify v1.7.1
 )
 
