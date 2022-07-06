@@ -16,12 +16,12 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/apps"
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/db"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
-	"hailo/eliona"
 	"os"
 	"time"
 )
@@ -43,19 +43,21 @@ func main() {
 	defer db.ClosePool()
 
 	// Init the app before the first run.
-	apps.Init(db.Pool(), common.AppName(),
-		apps.ExecSqlFile("conf/init.sql"),
-		eliona.InitAssetTypes,
+	app.Init(db.Pool(), common.AppName(),
+		app.ExecSqlFile("conf/init.sql"),
+		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
 		conf.InitConfiguration,
 	)
 
 	// Patch the app
-	apps.Patch(db.Pool(), common.AppName(), "020000",
-		apps.ExecSqlFile("conf/v2.0.0.sql"))
+	app.Patch(db.Pool(), common.AppName(), "020000",
+		app.ExecSqlFile("conf/v2.0.0.sql"))
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.
-	apps.WaitFor(
-		apps.Loop(collectData, time.Second*11),
+	common.WaitFor(
+		common.Loop(collectData, time.Second*11),
 	)
 
 	// At the end set all configuration inactive

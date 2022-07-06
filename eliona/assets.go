@@ -16,11 +16,18 @@
 package eliona
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/assets"
-	"github.com/eliona-smart-building-assistant/go-eliona/db"
+	"github.com/eliona-smart-building-assistant/go-eliona/api"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
 	"hailo/hailo"
+)
+
+const (
+	BinAssetType              = "Hailo FDS Bin"
+	RecyclingStationAssetType = "Hailo FDS Recycling Station"
+	DigitalHubAssetType       = "Hailo Digital Hub"
 )
 
 // CreateAssetsIfNecessary create all assets for specification including sub specification if not already exists
@@ -56,19 +63,19 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	log.Debug("hailo", "Creating new asset for project %s and specification %s.", projectId, specification.DeviceId)
 
 	// If no asset id exists for project and configuration, create a new one
-	newId, err := assets.UpsertAsset(db.Pool(), assets.Asset{
+	newId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:             projectId,
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
-		Name:                  specification.Generic.Model,
-		AssetTypeId:           assetType(specification),
-		Description:           specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory,
+		Name:                  &specification.Generic.Model,
+		AssetType:             assetType(specification),
+		Description:           common.Ptr(specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory),
 	})
 	if err != nil {
 		return err
 	}
 
 	// Remember the asset id for further usage
-	err = conf.InsertAsset(config.Id, projectId, specification.DeviceId, newId)
+	err = conf.InsertAsset(config.Id, projectId, specification.DeviceId, *newId)
 	if err != nil {
 		return err
 	}
