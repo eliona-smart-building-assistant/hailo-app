@@ -30,4 +30,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:{{ steps.get_version.outputs.VERSION }}, ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:{{ steps.version.outputs.VERSION }}, ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
