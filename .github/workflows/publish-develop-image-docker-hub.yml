@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Build and publish develop image to Docker Hub
 
 on:
   push:
@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/hailo-app:develop
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:develop
