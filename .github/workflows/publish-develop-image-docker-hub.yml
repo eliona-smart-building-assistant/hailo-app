@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:develop
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:develop, ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
