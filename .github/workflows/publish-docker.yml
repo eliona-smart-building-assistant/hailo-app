@@ -1,9 +1,11 @@
-name: Build and publish tagged version image to Docker Hub
+name: Build and publish develop image to Docker Hub
 
 on:
   push:
+    branches:
+      - develop
     tags:
-      - 'v*'
+      - v*
 
 jobs:
   push_to_registry:
@@ -18,16 +20,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-
-      - name: Get the version
-        id: version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-        shell: bash
-
+      
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:{{ steps.get_version.outputs.VERSION }}, ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}, ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
