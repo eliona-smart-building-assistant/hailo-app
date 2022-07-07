@@ -75,6 +75,9 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	if err != nil {
 		return err
 	}
+	if newId == nil {
+		return fmt.Errorf("cannot create asset: %s", name)
+	}
 
 	// Remember the asset id for further usage
 	err = conf.InsertAsset(config.Id, projectId, specification.DeviceId, *newId)
