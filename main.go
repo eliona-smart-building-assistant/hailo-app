@@ -53,13 +53,7 @@ func main() {
 
 	// Patch the app to v2.0.0
 	app.Patch(db.Pool(), common.AppName(), "020000",
-		app.ExecSqlFile("conf/v2.0.0.sql"))
-
-	// Patch the app to v2.0.1 (Reassign the asset types)
-	app.Patch(db.Pool(), common.AppName(), "020001",
-		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
+		app.ExecSqlFile("conf/v2.0.0.sql"),
 	)
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.
