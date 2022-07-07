@@ -25,6 +25,7 @@ FROM alpine:3.15 AS target
 
 COPY --from=build /app ./
 COPY conf/*.sql ./conf/
+COPY eliona/*.json ./eliona/
 
 ENV APPNAME=hailo
 
