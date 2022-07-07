@@ -35,7 +35,8 @@
 				"de": "Batteriestand",
 				"en": "Battery Level"
 			},
-			"type": "battery-voltage"
+			"type": "battery-voltage",
+			"unit": "%"
 		},
 		{
 			"enable": true,

@@ -16,6 +16,7 @@
 package eliona
 
 import (
+	"fmt"
 	"github.com/eliona-smart-building-assistant/go-eliona/api"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/common"
@@ -66,7 +67,7 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	newId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:             projectId,
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
-		Name:                  &specification.Generic.Model,
+		Name:                  common.Ptr(fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)),
 		AssetType:             assetType(specification),
 		Description:           common.Ptr(specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory),
 	})
