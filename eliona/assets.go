@@ -64,13 +64,14 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	log.Debug("hailo", "Creating new asset for project %s and specification %s.", projectId, specification.DeviceId)
 
 	// If no asset id exists for project and configuration, create a new one
-	name := fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)
+	name := name(specification)
+	description := description(specification)
 	newId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:             projectId,
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
 		Name:                  common.Ptr(name),
 		AssetType:             assetType(specification),
-		Description:           common.Ptr(specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory),
+		Description:           common.Ptr(description),
 	})
 	if err != nil {
 		return err
@@ -94,4 +95,16 @@ func assetType(specification hailo.Spec) string {
 		return RecyclingStationAssetType
 	}
 	return BinAssetType
+}
+
+func name(specification hailo.Spec) string {
+	return fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)
+}
+
+func description(specification hailo.Spec) string {
+	if assetType(specification) == RecyclingStationAssetType {
+		return fmt.Sprintf("%s", specification.Generic.Model)
+	} else {
+		return fmt.Sprintf("%s (%s - %s)", specification.Generic.Model, specification.DeviceTypeSpecific.Channel, specification.DeviceTypeSpecific.ContentCategory)
+	}
 }
