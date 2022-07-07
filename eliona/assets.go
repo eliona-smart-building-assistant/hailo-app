@@ -64,10 +64,11 @@ func createAssetIfNecessary(config conf.Config, projectId string, specification 
 	log.Debug("hailo", "Creating new asset for project %s and specification %s.", projectId, specification.DeviceId)
 
 	// If no asset id exists for project and configuration, create a new one
+	name := fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)
 	newId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:             projectId,
 		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
-		Name:                  common.Ptr(fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)),
+		Name:                  common.Ptr(name),
 		AssetType:             assetType(specification),
 		Description:           common.Ptr(specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory),
 	})
