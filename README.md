@@ -7,6 +7,10 @@ This app collects the data from configurable Hailo FDS endpoints. For each endpo
 
 The app needs environment variables and database tables for configuration.
 
+### Eliona ###
+
+To start and initialize an app in an Eliona environment, the app have to registered in Eliona. For this, an entry in the database table `public.eliona_app` is necessary.
+
 ### Environment variables ###
 
 #### APPNAME
