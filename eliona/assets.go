@@ -102,7 +102,7 @@ func name(specification hailo.Spec) string {
 }
 
 func description(specification hailo.Spec) string {
-	if assetType(specification) == RecyclingStationAssetType {
+	if assetType(specification) == RecyclingStationAssetType || specification.Generic.Model == "" {
 		return fmt.Sprintf("%s", specification.Generic.Model)
 	} else {
 		return fmt.Sprintf("%s (%s - %s)", specification.Generic.Model, specification.DeviceTypeSpecific.Channel, specification.DeviceTypeSpecific.ContentCategory)
