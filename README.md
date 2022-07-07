@@ -14,15 +14,23 @@ The app needs environment variables and database tables for configuration.
 The `APPNAME` MUST be set to `hailo`. Some resources use this name to identify the app inside an Eliona environment. For running as a Docker container inside an Eliona environment, the `APPNAME` have to set in the [Dockerfile](Dockerfile). If the app runs outside an Eliona environment the `APPNAME` must be set explicitly.
 
 ```bash
-export APPNAME=hailo # For running in Eliona environment set app name in Dockerfile
+export APPNAME=hailo
 ```
 
 #### CONNECTION_STRING
 
-The `CONNECTION_STRING` variable configures the [eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). If the app runs as a Docker container inside an Eliona environment it is ensured that the variable is already set by the environment. If you run the app standalone you must provide this variable. Otherwise the app can't be initialized and started.
+The `CONNECTION_STRING` variable configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). If the app runs as a Docker container inside an Eliona environment, the environment must provide this variable. If you run the app standalone you must set this variable. Otherwise, the app can't be initialized and started.
 
 ```bash
-export CONNECTION_STRING=postgres://user:pass@localhost::5432/iot # only if run standalone
+export CONNECTION_STRING=postgres://user:pass@localhost:5432/iot
+```
+
+#### API_ENDPOINT
+
+The `API_ENDPOINT` variable configures the endpoint to access the [Eliona API](https://github.com/eliona-smart-building-assistant/eliona-api). If the app runs as a Docker container inside an Eliona environment, the environment must provide this variable. If you run the app standalone you must set this variable. Otherwise, the app can't be initialized and started.
+
+```bash
+export API_ENDPOINT=http://localhost:8082/v2
 ```
 
 #### DEBUG_LEVEL (optional)
@@ -30,7 +38,7 @@ export CONNECTION_STRING=postgres://user:pass@localhost::5432/iot # only if run 
 The `DEBUG_LEVEL` variable defines the minimum level that should be [logged](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/log). Not defined the default level is `info`.
 
 ```bash
-export LOG_LEVEL=debug # This is optionally, default is info
+export LOG_LEVEL=debug # optionally, default is 'info'
 ```
 
 ### Database tables ###
