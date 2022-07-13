@@ -16,8 +16,8 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/common"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/conf"
 	"hailo/eliona"
 	"hailo/hailo"

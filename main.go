@@ -16,12 +16,12 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/common"
-	"github.com/eliona-smart-building-assistant/go-eliona/db"
-	"github.com/eliona-smart-building-assistant/go-eliona/eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-eliona/eliona/dashboard"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/db"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/conf"
 	"os"
 	"time"
@@ -44,7 +44,7 @@ func main() {
 	defer db.ClosePool()
 
 	// Init the app before the first run.
-	app.Init(db.Pool(), common.AppName(),
+	app.Init(db.Pool(), app.AppName(),
 		app.ExecSqlFile("conf/init.sql"),
 		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
 		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
@@ -53,12 +53,12 @@ func main() {
 	)
 
 	// Patch the app to v2.0.0
-	app.Patch(db.Pool(), common.AppName(), "020000",
+	app.Patch(db.Pool(), app.AppName(), "020000",
 		app.ExecSqlFile("conf/v2.0.0.sql"),
 	)
 
 	// Patch the app to v2.0.1
-	app.Patch(db.Pool(), common.AppName(), "020001",
+	app.Patch(db.Pool(), app.AppName(), "020001",
 		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
 		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
 	)

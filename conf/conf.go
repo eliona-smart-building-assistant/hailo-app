@@ -16,8 +16,8 @@
 package conf
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/db"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"github.com/eliona-smart-building-assistant/go-utils/db"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
 const DefaultInactiveTimeout = 60 * 60 * 24 // time until set a container to inactive (sec)

@@ -18,8 +18,8 @@ package hailo
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/eliona-smart-building-assistant/go-eliona/http"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"github.com/eliona-smart-building-assistant/go-utils/http"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/conf"
 	"strings"
 	"sync"
