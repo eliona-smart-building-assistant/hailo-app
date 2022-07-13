@@ -16,10 +16,11 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/db"
+	"github.com/eliona-smart-building-assistant/go-eliona/eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
 	"os"
@@ -54,6 +55,12 @@ func main() {
 	// Patch the app to v2.0.0
 	app.Patch(db.Pool(), common.AppName(), "020000",
 		app.ExecSqlFile("conf/v2.0.0.sql"),
+	)
+
+	// Patch the app to v2.0.1
+	app.Patch(db.Pool(), common.AppName(), "020001",
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
 	)
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.

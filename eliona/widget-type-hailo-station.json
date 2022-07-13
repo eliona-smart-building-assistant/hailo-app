@@ -1,0 +1,34 @@
+{
+  "name": "Hailo Station",
+  "custom": true,
+  "translation": {
+    "de": "Hailo Station",
+    "en": "Hailo Station",
+    "fr": "Hailo Station",
+    "it": "Hailo Station"
+  },
+  "icon": "hailo",
+  "withAlarm": true,
+  "withTimespan": true,
+  "elements": [
+    {
+      "category": "progress",
+      "description": "Average",
+      "config": {
+        "variant": "vertical",
+        "progressText": "Average level",
+        "progressBar": true,
+        "divider":" /",
+        "valueType": "relative"
+      }
+    },
+    {
+      "category": "radar",
+      "description": "Level bin",
+      "config": {
+        "showLegend":true,
+        "legendType":"percent"
+      }
+    }
+  ]
+}

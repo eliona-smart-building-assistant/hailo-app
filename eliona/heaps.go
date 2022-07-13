@@ -17,8 +17,8 @@ package eliona
 
 import (
 	"github.com/eliona-smart-building-assistant/go-eliona/api"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/common"
+	"github.com/eliona-smart-building-assistant/go-eliona/eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/log"
 	"hailo/conf"
 	"hailo/hailo"

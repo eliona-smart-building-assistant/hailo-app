@@ -73,8 +73,8 @@ func BuildFdsConfig(authServer string, username string, password string, fdsEndp
 	return config
 }
 
-func GetAssetId(confId int, projId string, deviceId string) *int {
-	assetId, err := db.QuerySingleRow[*int](db.Pool(), "select asset_id from hailo.asset where config_id = $1 and proj_id = $2 and device_id = $3", confId, projId, deviceId)
+func GetAssetId(confId int, projId string, deviceId string) *int32 {
+	assetId, err := db.QuerySingleRow[*int32](db.Pool(), "select asset_id from hailo.asset where config_id = $1 and proj_id = $2 and device_id = $3", confId, projId, deviceId)
 	if err != nil {
 		log.Error("Hailo", "Error getting asset id: %v", err)
 	}
