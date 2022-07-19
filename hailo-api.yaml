@@ -1,0 +1,212 @@
+openapi: 3.0.3
+
+#  This file is part of the eliona project.
+#  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
+#  ______ _ _
+# |  ____| (_)
+# | |__  | |_  ___  _ __   __ _
+# |  __| | | |/ _ \| '_ \ / _` |
+# | |____| | | (_) | | | | (_| |
+# |______|_|_|\___/|_| |_|\__,_|
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+#  BUT NOT LIMITED  TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#  NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+#  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+info:
+  version: 1.0.0
+  title: Hailo API
+  description: API to access and configure the Hailo app
+externalDocs:
+  description: Find out more about the Hailo app
+  url: https://github.com/eliona-smart-building-assistant/hailo-app
+servers:
+  - url: http://hailo/v1
+
+tags:
+  - name: Configuration
+    description: Configure access to Hailo smart devices
+    externalDocs:
+      url: https://github.com/eliona-smart-building-assistant/hailo-app
+
+  - name: Asset Mapping
+    description: Hailo smart devices mapped to Eliona
+    externalDocs:
+      url: https://github.com/eliona-smart-building-assistant/hailo-app
+
+paths:
+
+  /config:
+    get:
+      tags:
+        - Configuration
+      summary: Get all FDS endpoints
+      description: Gets information about all configured Hailo FDS endpoints.
+      operationId: getConfigurations
+      responses:
+        200:
+          description: Successfully returned configured FDS endpoints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Configuration'
+
+  /config/{config-id}:
+    get:
+      tags:
+        - Configuration
+      summary: Get FDS endpoint
+      description: Gets information about the FDS endpoint with the given id
+      parameters:
+        - $ref: '#/components/parameters/ConfigId'
+      operationId: getConfiguration
+      responses:
+        200:
+          description: Successfully returned configured FDS endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+    post:
+      tags:
+        - Configuration
+      summary: Creates or update an FDS endpoint
+      description: Creates an FDS endpoint configuration if no configuration with the same id already exists. If there is such an id the configuration is updated.
+      parameters:
+        - $ref: '#/components/parameters/ConfigId'
+      operationId: postConfiguration
+      responses:
+        200:
+          description: Successfully created a new or updated an existing configured Hailo FDS endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+
+  /asset/mapping/:
+    get:
+      tags:
+        - Asset Mapping
+      operationId: getAssetMappingsByConfig
+      parameters:
+        - name: config-id
+          in: query
+          description: Id of `Configuration` for which the Hail smart devices are mapped
+          required: false
+          schema:
+            type: integer
+            example: 4711
+      responses:
+        200:
+          description: Successfully returned asset mappings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssetMapping'
+
+components:
+
+  parameters:
+
+    ConfigId:
+      name: config-id
+      in: path
+      description: The id of the configured Hailo FDS endpoint
+      example: 4711
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+
+    Configuration:
+      type: object
+      description: Each configuration defines access to an Hailo FDS endpoint with configurable timeouts and polling intervals. Each FDS endpoint delivers information about a set of Hailo smart devices.
+      required:
+        - username
+        - password
+        - auth_server
+        - fds_server
+      properties:
+        id:
+          type: integer
+          description: Internal identifier for the configured endpoint (created automatically). This identifier have to use always if you remove or update existing configured endpoints.
+        username:
+          type: string
+          description: Login for authentication endpoint
+          example: username
+        password:
+          type: string
+          description: Password for authentication endpoint
+          example: secret
+        auth_server:
+          type: string
+          description: Url to Hailo authentication endpoint
+          example: https://foo.execute-api.eu-central-1.amazonaws.com
+        fds_server:
+          type: string
+          description: Url to Hailo FDS endpoint
+          example: https://bar.execute-api.eu-central-1.amazonaws.com/hailo/v1
+        enable:
+          type: boolean
+          description: Flag to enable or disable the endpoint
+          default: true
+        description:
+          type: string
+          description: Description of the endpoint
+          example: This is an example FDS endpoint configuration
+        asset_id:
+          type: integer
+          description: Id of an parent asset with groups all device assets
+        interval_sec:
+          type: integer
+          description: Interval in seconds for collecting data from endpoint
+          default: 60
+        auth_timeout:
+          type: integer
+          description: Timeout in seconds for authentication server
+          default: 5
+        request_timeout:
+          type: integer
+          description: Timeout in seconds for FDS server
+          default: 120
+        active:
+          type: boolean
+          readOnly: true
+          description: Set to `true` by the app when running and to `false` when app is stopped
+        proj_ids:
+          type: array
+          description: List of Eliona project ids for which this endpoint should collect data. For each pair of project id and Hailo smart device identifier found in the configured endpoint an asset is automatically created in Eliona. This mapping of project id and device id on the one hand and the Eliona asset id on the other hand is separately stored by the Hailo app (see `AssetMapping`).
+          items:
+            type: string
+          example:
+            - 42
+            - 99
+
+    AssetMapping:
+      type: object
+      readOnly: true
+      description: The `AssetMapping` maps each pair of Eliona project id and Hailo smart device to an Eliona asset. For different Eliona projects different assets are used (see `proj_ids` in `Configuration`). The mapping is created automatically by the app and should used read only.
+      properties:
+        config_id:
+          type: integer
+          description: References the configured endpoint (see `Configuration`)
+          example: 4711
+        device_id:
+          type: string
+          description: References to the Hailo smart device (internal id from Hailo FDS for this device)
+          example: Hailo_Big-BoxSwingXL_NODE-812341FAB43F667
+        proj_id:
+          type: string
+          description: The project id for which the Eliona asset is created (see `proj_ids` in `Configuration`)
+          example: 99
+        asset_id:
+          type: integer
+          description: References the asset id in Eliona which is automatically created by the app
+          example: 815
