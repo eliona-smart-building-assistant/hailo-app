@@ -67,30 +67,18 @@ func createAssetIfNecessary(config conf.Config, projectId string, parentAssetId 
 	name := name(spec)
 	description := description(spec)
 	newId, err := asset.UpsertAsset(api.Asset{
-		ProjectId:             projectId,
-		GlobalAssetIdentifier: spec.Generic.DeviceSerial,
-		Name:                  common.Ptr(name),
-		AssetType:             assetType(spec),
-		Description:           common.Ptr(description),
+		ProjectId:               projectId,
+		GlobalAssetIdentifier:   spec.Generic.DeviceSerial,
+		Name:                    common.Ptr(name),
+		AssetType:               assetType(spec),
+		Description:             common.Ptr(description),
+		ParentLocationalAssetId: parentAssetId,
 	})
 	if err != nil {
 		return nil, err
 	}
 	if newId == nil {
 		return nil, fmt.Errorf("cannot create asset: %s", name)
-	}
-
-	// Add parent if this is a child container
-	if parentAssetId != nil {
-		err := asset.SetAssetParents(*newId, []api.AssetRelation{
-			{
-				RelatedAssetId: *parentAssetId,
-				Type:           common.Ptr("location"),
-			},
-		})
-		if err != nil {
-			return newId, err
-		}
 	}
 
 	// Remember the asset id for further usage
