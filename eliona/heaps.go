@@ -54,7 +54,7 @@ type deviceHeapData struct {
 func upsertHeap(subtype api.HeapSubtype, time time.Time, assetId int32, data any) error {
 	var statusHeap api.Heap
 	statusHeap.Subtype = subtype
-	statusHeap.Timestamp = &time
+	statusHeap.Timestamp = *api.NewNullableTime(&time)
 	statusHeap.AssetId = assetId
 	statusHeap.Data = common.StructToMap(data)
 	err := asset.UpsertHeapIfAssetExists[any](statusHeap)

@@ -66,13 +66,14 @@ func createAssetIfNecessary(config conf.Config, projectId string, parentAssetId 
 	// If no asset id exists for project and configuration, create a new one
 	name := name(spec)
 	description := description(spec)
+
 	newId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:               projectId,
 		GlobalAssetIdentifier:   spec.Generic.DeviceSerial,
-		Name:                    common.Ptr(name),
+		Name:                    *api.NewNullableString(common.Ptr(name)),
 		AssetType:               assetType(spec),
-		Description:             common.Ptr(description),
-		ParentLocationalAssetId: parentAssetId,
+		Description:             *api.NewNullableString(common.Ptr(description)),
+		ParentLocationalAssetId: *api.NewNullableInt32(parentAssetId),
 	})
 	if err != nil {
 		return nil, err
