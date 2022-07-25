@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/eliona-smart-building-assistant/go-eliona v1.6.0
-	github.com/eliona-smart-building-assistant/go-eliona-api-client v1.0.2
+	github.com/eliona-smart-building-assistant/go-eliona-api-client v1.0.3
 	github.com/eliona-smart-building-assistant/go-utils v1.0.0
 	github.com/stretchr/testify v1.8.0
 )
