@@ -36,7 +36,7 @@ jobs:
 #      displayName: 'Trigger deploy experimental'
 #      inputs:
 #        templateParameters: 'deploymentEnvironment: experimental, repository: hailo_app, deploymentRepository: hailo_app'
-#        buildDefinition: ${{ format('{0}_deploy', 'hailo_app' ) }}
+#        buildDefinition: ${{ format('{0}_deploy', 'eliona-smart-building-assistant.hailo_app' ) }}
 #        useSameBranch: true
 #        waitForQueuedBuildsToFinish: false
 #        authenticationMethod: 'OAuth Token'
@@ -46,7 +46,7 @@ jobs:
 #      condition: eq(variables['Build.SourceBranchName'], 'develop')
 #      inputs:
 #        templateParameters: 'deploymentEnvironment: develop, repository: hailo_app, deploymentRepository: hailo_app'
-#        buildDefinition: ${{ format('{0}_deploy', 'hailo_app' ) }}
+#        buildDefinition: ${{ format('{0}_deploy', 'eliona-smart-building-assistant.hailo_app' ) }}
 #        useSameBranch: true
 #        waitForQueuedBuildsToFinish: false
 #        authenticationMethod: 'OAuth Token'

@@ -17,7 +17,7 @@ resources:
       name: utils/pipeline
 
 extends:
-  template: 'deployment.yml@pipeline'
+  template: 'jobs/deployment-from-docker-hub.yml@pipeline'
   parameters:
     deploymentEnvironment: ${{ parameters.deploymentEnvironment }}
     repository: ${{ parameters.repository }}
