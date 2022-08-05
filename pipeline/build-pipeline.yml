@@ -24,6 +24,7 @@ resources:
 jobs:
 - template: "jobs/docker-with-cache.yml@pipeline"
   parameters:
+    registry: public
     repository: hailo-app
 #- job: Trigger_deploy
 #  displayName: Trigger deploy
