@@ -22,11 +22,10 @@ resources:
       type: git
       name: utils/pipeline
 jobs:
-- job: Build_and_push
-  steps:
-  - template: "steps/docker-build-push-docker-hub.yml@pipeline"
-    parameters:
-      repository: hailo-app
+- template: "jobs/docker-with-cache.yml@pipeline"
+  parameters:
+    registry: public
+    repository: hailo-app
 - job: Trigger_deploy
   displayName: Trigger deploy
   dependsOn: Build_and_push
