@@ -26,19 +26,19 @@ import (
 	"time"
 )
 
-func UpsertHeapForDevices(config conf.Config, spec hailo.Spec) error {
+func UpsertDataForDevices(config conf.Config, spec hailo.Spec) error {
 
 	for _, projectId := range config.ProjectIds {
 
-		err := upsertHeapForDevice(config, projectId, spec)
+		err := upsertDataForDevice(config, projectId, spec)
 		if err != nil {
-			log.Error("Hailo", "Could not upsert heap for device %s: %v", spec.DeviceId, err)
+			log.Error("Hailo", "Could not upsert data for device %s: %v", spec.DeviceId, err)
 			return err
 		}
 		for _, subSpec := range spec.DeviceTypeSpecific.ComponentIdList {
-			err = upsertHeapForDevice(config, projectId, subSpec)
+			err = upsertDataForDevice(config, projectId, subSpec)
 			if err != nil {
-				log.Error("Hailo", "Could not upsert heap for sub device %s: %v", subSpec.DeviceId, err)
+				log.Error("Hailo", "Could not upsert data for sub device %s: %v", subSpec.DeviceId, err)
 				return err
 			}
 		}
@@ -46,32 +46,32 @@ func UpsertHeapForDevices(config conf.Config, spec hailo.Spec) error {
 	return nil
 }
 
-type deviceHeapData struct {
+type deviceDataPayload struct {
 	RegistrationDate string `json:"reg_data"`
 	Volume           int    `json:"volume"`
 }
 
-func upsertHeap(subtype api.HeapSubtype, time time.Time, assetId int32, data any) error {
-	var statusHeap api.Heap
-	statusHeap.Subtype = subtype
-	statusHeap.Timestamp = *api.NewNullableTime(&time)
-	statusHeap.AssetId = assetId
-	statusHeap.Data = common.StructToMap(data)
-	err := asset.UpsertHeapIfAssetExists[any](statusHeap)
+func upsertData(subtype api.DataSubtype, time time.Time, assetId int32, payload any) error {
+	var statusData api.Data
+	statusData.Subtype = subtype
+	statusData.Timestamp = *api.NewNullableTime(&time)
+	statusData.AssetId = assetId
+	statusData.Data = common.StructToMap(payload)
+	err := asset.UpsertDataIfAssetExists[any](statusData)
 	if err != nil {
-		log.Error("Hailo", "Error during writing heap: %v", err)
+		log.Error("Hailo", "Error during writing data: %v", err)
 		return err
 	}
 	return nil
 }
 
-func upsertHeapForDevice(config conf.Config, projectId string, spec hailo.Spec) error {
-	log.Debug("Hailo", "Upsert Heap for device: config %d and device '%s'", config.Id, spec.DeviceId)
-	return upsertHeap(
-		api.INFO,
+func upsertDataForDevice(config conf.Config, projectId string, spec hailo.Spec) error {
+	log.Debug("Hailo", "Upsert data for device: config %d and device '%s'", config.Id, spec.DeviceId)
+	return upsertData(
+		api.SUBTYPE_INFO,
 		parseTime(spec.Generic.RegistrationDate),
-		int32(*conf.GetAssetId(config.Id, projectId, spec.DeviceId)),
-		deviceHeapData{RegistrationDate: spec.Generic.RegistrationDate, Volume: binVolume(spec)},
+		*conf.GetAssetId(config.Id, projectId, spec.DeviceId),
+		deviceDataPayload{RegistrationDate: spec.Generic.RegistrationDate, Volume: binVolume(spec)},
 	)
 }
 
@@ -83,7 +83,7 @@ func binVolume(spec hailo.Spec) int {
 	return binVolume
 }
 
-type stationHeapData struct {
+type stationDataPayload struct {
 	BatteryLevel     int     `json:"bat_level"`
 	LastContact      float64 `json:"last_contact"`
 	TotalOpenings    int     `json:"totalopenings"`
@@ -91,15 +91,15 @@ type stationHeapData struct {
 	Active           bool    `json:"active"`
 }
 
-func UpsertHeapForStation(config conf.Config, status hailo.Status) error {
+func UpsertDataForStation(config conf.Config, status hailo.Status) error {
 	for _, projectId := range config.ProjectIds {
-		log.Debug("Hailo", "Upsert Heap for station: config %d and station '%s'", config.Id, status.DeviceId)
+		log.Debug("Hailo", "Upsert data for station: config %d and station '%s'", config.Id, status.DeviceId)
 		lastContact := parseTimeToHours(status.Generic.LastContact)
-		err := upsertHeap(
-			api.INPUT,
+		err := upsertData(
+			api.SUBTYPE_INPUT,
 			parseTime(status.Generic.LastContact),
 			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
-			stationHeapData{
+			stationDataPayload{
 				int(status.DeviceTypeSpecific.AverageBatteryLevel * 100),
 				lastContact,
 				status.DeviceTypeSpecific.TotalInputsCount,
@@ -108,7 +108,7 @@ func UpsertHeapForStation(config conf.Config, status hailo.Status) error {
 			},
 		)
 		if err != nil {
-			log.Error("Hailo", "Could not upsert heap for station %s: %v", status.DeviceId, err)
+			log.Error("Hailo", "Could not upsert data for station %s: %v", status.DeviceId, err)
 			return err
 		}
 	}
@@ -119,7 +119,7 @@ func CheckActivity(connection conf.Config, lastContact float64) bool {
 	return lastContact < (float64)(connection.InactiveTimeout/3600)
 }
 
-type binHeapData struct {
+type binDataPayload struct {
 	BatteryLevel     int     `json:"bat_level"`
 	Openings         int     `json:"openings"`
 	LastContact      float64 `json:"last_contact"`
@@ -131,20 +131,20 @@ type binHeapData struct {
 	Active           bool    `json:"active"`
 }
 
-type statusHeapData struct {
+type statusDataPayload struct {
 	ExpectedPercent int `json:"exp_percent"`
 }
 
-func UpsertHeapForBin(config conf.Config, status hailo.Status, diag hailo.Diag) error {
+func UpsertDataForBin(config conf.Config, status hailo.Status, diag hailo.Diag) error {
 	for _, projectId := range config.ProjectIds {
-		log.Debug("Hailo", "Upsert Heap for bin: config %d and bin '%s'", config.Id, status.DeviceId)
+		log.Debug("Hailo", "Upsert data for bin: config %d and bin '%s'", config.Id, status.DeviceId)
 
 		lastContact := parseTimeToHours(status.Generic.LastContact)
-		err := upsertHeap(
-			api.INPUT,
+		err := upsertData(
+			api.SUBTYPE_INPUT,
 			parseTime(status.Generic.LastContact),
 			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
-			binHeapData{
+			binDataPayload{
 				int(status.DeviceTypeSpecific.BatteryLevel * 100),
 				status.DeviceTypeSpecific.LastEmptyCount,
 				lastContact,
@@ -157,18 +157,18 @@ func UpsertHeapForBin(config conf.Config, status hailo.Status, diag hailo.Diag) 
 			},
 		)
 		if err != nil {
-			log.Error("Hailo", "Could not upsert heap for bin %s: %v", status.DeviceId, err)
+			log.Error("Hailo", "Could not upsert data for bin %s: %v", status.DeviceId, err)
 			return err
 		}
 
-		err = upsertHeap(
-			api.STATUS,
+		err = upsertData(
+			api.SUBTYPE_STATUS,
 			parseTime(status.Generic.LastContact),
 			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
-			statusHeapData{int(diag.DeviceTypeSpecific.ExpectedFillingLevel * 100)},
+			statusDataPayload{int(diag.DeviceTypeSpecific.ExpectedFillingLevel * 100)},
 		)
 		if err != nil {
-			log.Error("Hailo", "Could not upsert heap for bin %s: %v", status.DeviceId, err)
+			log.Error("Hailo", "Could not upsert data for bin %s: %v", status.DeviceId, err)
 			return err
 		}
 	}

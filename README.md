@@ -1,7 +1,7 @@
 # Hailo App
 The [Hailo app](https://github.com/eliona-smart-building-assistant/hailo-app) enables the [Hailo Digital Hub](https://www.hailodigitalhub.de/) for an [Eliona](https://www.eliona.io/) enviroment.
 
-This app collects the data from configurable Hailo FDS endpoints. For each endpoint the app read the data for Hailo smart devices (smart waste stations and smart waste bins). Each device corresponds with an Eliona asset, which are created automatically, and writes various Eliona heap data for these assets.
+This app collects the data from configurable Hailo FDS endpoints. For each endpoint the app read the data for Hailo smart devices (smart waste stations and smart waste bins). Each device corresponds with an Eliona asset, which are created automatically, and writes various Eliona data for these assets.
 
 ## Configuration
 
@@ -79,7 +79,7 @@ Insert in the `proj_ids` column all Eliona project ids for which the endpoint sh
 
 1. Collect specification and data for all devices
 2. Create assets for each device in both projects `1` and `99`, if not already exists. Remember created asset ids in table `hailo.asset`.
-3. Writes heap data for each device for the corresponding assets in both projects `1` and `99`
+3. Writes data for each device for the corresponding assets in both projects `1` and `99`
 
 #### hailo.asset
 
@@ -94,9 +94,9 @@ The mapping is created automatically by the app. So this table does not necessar
 | `asset_id`  | References the asset id from Eliona an maps the device id to an Eliona asset      |
 | `proj_id`   | The project id for which the Eliona asset is created (see column `proj_ids` above |
 
-If specification of a Hailo smart device is read (at the first time or if new devices are added later) the app looks if there is already a mapping. If so, the app uses the mapped asset id for writing the heap data. If not, the app creates a new Eliona asset or updates an existing one and inserts the mapping in this table for further use.
+If specification of a Hailo smart device is read (at the first time or if new devices are added later) the app looks if there is already a mapping. If so, the app uses the mapped asset id for writing the data. If not, the app creates a new Eliona asset or updates an existing one and inserts the mapping in this table for further use.
 
-You can move or delete automatically created assets via the Eliona frontend. The app doesn't recreate this asset as long as the mapping is present in the table `hailo.asset`. In this case of deleted asset, the app just skips the writing of the heap data.
+You can move or delete automatically created assets via the Eliona frontend. The app doesn't recreate this asset as long as the mapping is present in the table `hailo.asset`. In this case of deleted asset, the app just skips the writing of the data.
 
 ### Migrate configuration prior version 2.0
 
@@ -113,11 +113,11 @@ Versions of this app prior 2.0 use different mapping of assets and Hailo smart d
 
 ## API Reference
 
-The hailo app writes heap data for each Hailo smart device. The data is structured into different subtypes of Eliona assets. See [eliona/heaps.go](eliona/heaps.go) for details. The following subtypes are defined:
+The hailo app writes data for each Hailo smart device. The data is structured into different subtypes of Eliona assets. See [eliona/heaps.go](eliona/heaps.go) for details. The following subtypes are defined:
 
-- `Input`: Data like current volume in percent or count of openings for bins and stations ( `struct stationHeapData {}` and `struct binHeapData {}`)
-- `Status`: Statistic data like expected filling level at next service (`struct statusHeapData {}`)
-- `Info`: Static data which specifies a Hailo smart device like total volume and registration date (`struct deviceHeapData {}`)
+- `Input`: Data like current volume in percent or count of openings for bins and stations ( `struct stationDataPayload {}` and `struct binDataPayload {}`)
+- `Status`: Statistic data like expected filling level at next service (`struct statusDataPayload {}`)
+- `Info`: Static data which specifies a Hailo smart device like total volume and registration date (`struct deviceDataPayload {}`)
 
 The app creates corresponding Eliona asset types and attribute sets during initialization. See [eliona/init.go](eliona/init.go) for details.
 

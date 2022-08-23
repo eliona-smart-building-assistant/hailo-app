@@ -82,8 +82,8 @@ func collectData() {
 	}
 }
 
-// collectDataForConfig reads specification of all devices in the given connection. For all devices found heap
-// data is written. In case of stations (group multiple component devices) heap data for each component is read and
+// collectDataForConfig reads specification of all devices in the given connection. For all devices found asset
+// data is written. In case of stations (group multiple component devices) data for each component is read and
 // written.
 func collectDataForConfig(config conf.Config) {
 
@@ -94,7 +94,7 @@ func collectDataForConfig(config conf.Config) {
 		return
 	}
 
-	// For each spec write heap data
+	// For each spec write asset data
 	for _, spec := range specs.Data {
 
 		// If necessary create assets in eliona
@@ -103,8 +103,8 @@ func collectDataForConfig(config conf.Config) {
 			return
 		}
 
-		// Writing Heap for specification
-		err = eliona.UpsertHeapForDevices(config, spec)
+		// Writing asset data for specification
+		err = eliona.UpsertDataForDevices(config, spec)
 		if err != nil {
 			return
 		}
@@ -120,7 +120,7 @@ func collectDataForConfig(config conf.Config) {
 		if status.IsStation() {
 
 			// Upsert status for station
-			err = eliona.UpsertHeapForStation(config, status)
+			err = eliona.UpsertDataForStation(config, status)
 			if err != nil {
 				return
 			}
@@ -136,7 +136,7 @@ func collectDataForConfig(config conf.Config) {
 				}
 
 				// Upsert status and diag for station components
-				err = eliona.UpsertHeapForBin(config, compStatus, diag)
+				err = eliona.UpsertDataForBin(config, compStatus, diag)
 				if err != nil {
 					return
 				}
@@ -153,7 +153,7 @@ func collectDataForConfig(config conf.Config) {
 			}
 
 			// Upsert status and diag for station single container
-			err = eliona.UpsertHeapForBin(config, status, diag)
+			err = eliona.UpsertDataForBin(config, status, diag)
 			if err != nil {
 				return
 			}
