@@ -13,14 +13,12 @@
 		{
 			"enable": true,
 			"name": "bat_level",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Durchschnittlicher Batteriestand",
@@ -55,14 +53,12 @@
 		{
 			"enable": true,
 			"name": "totalopenings",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Total Öffnungen kombiniert",
@@ -73,14 +69,12 @@
 		{
 			"enable": true,
 			"name": "volumepercent",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Durchschnittlicher Füllstand",
