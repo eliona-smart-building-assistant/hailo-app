@@ -16,11 +16,13 @@
 package eliona
 
 import (
+	"context"
 	"fmt"
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"hailo/apiserver"
 	"hailo/conf"
 	"hailo/hailo"
 )
@@ -32,9 +34,9 @@ const (
 )
 
 // CreateAssetsIfNecessary create all assets for specification including sub specification if not already exists
-func CreateAssetsIfNecessary(config conf.Config, spec hailo.Spec) error {
+func CreateAssetsIfNecessary(config apiserver.Configuration, spec hailo.Spec) error {
 
-	for _, projectId := range config.ProjectIds {
+	for _, projectId := range conf.ProjIds(config) {
 		assetId, err := createAssetIfNecessary(config, projectId, nil, spec)
 		if err != nil {
 			log.Error("Hailo", "Could not create assets for device %s: %v", spec.DeviceId, err)
@@ -53,10 +55,10 @@ func CreateAssetsIfNecessary(config conf.Config, spec hailo.Spec) error {
 }
 
 // createAssetIfNecessary create asset for specification if not already exists
-func createAssetIfNecessary(config conf.Config, projectId string, parentAssetId *int32, spec hailo.Spec) (*int32, error) {
+func createAssetIfNecessary(config apiserver.Configuration, projectId string, parentAssetId *int32, spec hailo.Spec) (*int32, error) {
 
 	// Get known asset id from configuration
-	existingId := conf.GetAssetId(config.Id, projectId, spec.DeviceId)
+	existingId, err := conf.GetAssetId(context.Background(), config, projectId, spec.DeviceId)
 	if existingId != nil {
 		return existingId, nil
 	}
@@ -83,7 +85,7 @@ func createAssetIfNecessary(config conf.Config, projectId string, parentAssetId 
 	}
 
 	// Remember the asset id for further usage
-	err = conf.InsertAsset(config.Id, projectId, spec.DeviceId, *newId)
+	err = conf.InsertAsset(context.Background(), config, projectId, spec.DeviceId, *newId)
 	if err != nil {
 		return newId, err
 	}

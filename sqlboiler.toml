@@ -1,25 +1,20 @@
-output   = "db/public"
-pkgname  = "dbpublic"
+output   = "db/hailo"
+pkgname  = "dbhailo"
 add-global-variants = true
 wipe     = true
 no-tests = true
 add-enum-types = true
 
 [psql]
-dbname = "iot"
+dbname = "postgres"
 host   = "localhost"
-port   = 60001
+port   = 5432
 user   = "postgres"
 pass   = "secret"
-schema = "public"
+schema = "hailo"
 sslmode = "disable"
 whitelist = [
-    "asset", "heap", "trend_0", "trend_agg", "pipeline",
-    "asset_type", "attribute_schema",
-    "dashboard", "widget", "widget_element", "widget_type",
-    "eliona_app",
-    "alarm", "alarm_cfg", "alarm_history",
-    "edge_bridge", "eliona_node", "iosys_access", "iosys_device", "mbus_access", "mbus_device"
+    "asset", "config"
 ]
 
 [[types]]
@@ -36,9 +31,3 @@ type = "int"
 
 [types.replace]
 type = "int32"
-
-[aliases.tables.alarm_cfg]
-up_plural     = "AlarmConfigs"
-up_singular   = "AlarmConfig"
-down_plural   = "alarmConfigs"
-down_singular = "alarmConfig"

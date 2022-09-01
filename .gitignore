@@ -2,3 +2,4 @@
 .idea/**
 apiserver/.openapi-generator/**
 apiserver/api/**
+apiserver/*_service.go

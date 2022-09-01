@@ -18,16 +18,18 @@ import (
 // The AssetMappingApiRouter implementation should parse necessary information from the http request,
 // pass the data to a AssetMappingApiServicer to perform the required actions, then write the service results to the http response.
 type AssetMappingApiRouter interface {
-	GetAssetMappingsByConfig(http.ResponseWriter, *http.Request)
+	GetAssetMappings(http.ResponseWriter, *http.Request)
 }
 
 // ConfigurationApiRouter defines the required methods for binding the api requests to a responses for the ConfigurationApi
 // The ConfigurationApiRouter implementation should parse necessary information from the http request,
 // pass the data to a ConfigurationApiServicer to perform the required actions, then write the service results to the http response.
 type ConfigurationApiRouter interface {
-	GetConfiguration(http.ResponseWriter, *http.Request)
+	DeleteConfigurationById(http.ResponseWriter, *http.Request)
+	GetConfigurationById(http.ResponseWriter, *http.Request)
 	GetConfigurations(http.ResponseWriter, *http.Request)
-	PutConfiguration(http.ResponseWriter, *http.Request)
+	PostConfiguration(http.ResponseWriter, *http.Request)
+	PutConfigurationById(http.ResponseWriter, *http.Request)
 }
 
 // AssetMappingApiServicer defines the api actions for the AssetMappingApi service
@@ -35,7 +37,7 @@ type ConfigurationApiRouter interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type AssetMappingApiServicer interface {
-	GetAssetMappingsByConfig(context.Context, int32) (ImplResponse, error)
+	GetAssetMappings(context.Context, int64) (ImplResponse, error)
 }
 
 // ConfigurationApiServicer defines the api actions for the ConfigurationApi service
@@ -43,7 +45,9 @@ type AssetMappingApiServicer interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type ConfigurationApiServicer interface {
-	GetConfiguration(context.Context, int32) (ImplResponse, error)
+	DeleteConfigurationById(context.Context, int64) (ImplResponse, error)
+	GetConfigurationById(context.Context, int64) (ImplResponse, error)
 	GetConfigurations(context.Context) (ImplResponse, error)
-	PutConfiguration(context.Context, int32) (ImplResponse, error)
+	PostConfiguration(context.Context, Configuration) (ImplResponse, error)
+	PutConfigurationById(context.Context, int64, Configuration) (ImplResponse, error)
 }

@@ -48,23 +48,23 @@ func NewAssetMappingApiController(s AssetMappingApiServicer, opts ...AssetMappin
 func (c *AssetMappingApiController) Routes() Routes {
 	return Routes{
 		{
-			"GetAssetMappingsByConfig",
+			"GetAssetMappings",
 			strings.ToUpper("Get"),
-			"/v1/asset/mapping/",
-			c.GetAssetMappingsByConfig,
+			"/v1/asset-mappings/",
+			c.GetAssetMappings,
 		},
 	}
 }
 
-// GetAssetMappingsByConfig -
-func (c *AssetMappingApiController) GetAssetMappingsByConfig(w http.ResponseWriter, r *http.Request) {
+// GetAssetMappings -
+func (c *AssetMappingApiController) GetAssetMappings(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	configIdParam, err := parseInt32Parameter(query.Get("config-id"), false)
+	configIdParam, err := parseInt64Parameter(query.Get("config-id"), false)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-	result, err := c.service.GetAssetMappingsByConfig(r.Context(), configIdParam)
+	result, err := c.service.GetAssetMappings(r.Context(), configIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -13,59 +13,50 @@ package apiserver
 type Configuration struct {
 
 	// Internal identifier for the configured endpoint (created automatically). This identifier have to use always if you remove or update existing configured endpoints.
-	Id int32 `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
 
 	// Login for authentication endpoint
-	Username string `json:"username"`
+	Username *string `json:"username,omitempty"`
 
 	// Password for authentication endpoint
-	Password string `json:"password"`
+	Password *string `json:"password,omitempty"`
 
 	// Url to Hailo authentication endpoint
-	AuthServer string `json:"auth_server"`
+	AuthServer *string `json:"authServer,omitempty"`
 
 	// Url to Hailo FDS endpoint
-	FdsServer string `json:"fds_server"`
+	FdsServer *string `json:"fdsServer,omitempty"`
 
 	// Flag to enable or disable the endpoint
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 
 	// Description of the endpoint
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 
 	// Id of an parent asset with groups all device assets
-	AssetId int32 `json:"asset_id,omitempty"`
+	AssetId *int32 `json:"assetId,omitempty"`
 
 	// Interval in seconds for collecting data from endpoint
-	IntervalSec int32 `json:"interval_sec,omitempty"`
+	IntervalSec int32 `json:"intervalSec,omitempty"`
 
 	// Timeout in seconds for authentication server
-	AuthTimeout int32 `json:"auth_timeout,omitempty"`
+	AuthTimeout int32 `json:"authTimeout,omitempty"`
 
 	// Timeout in seconds for FDS server
-	RequestTimeout int32 `json:"request_timeout,omitempty"`
+	RequestTimeout int32 `json:"requestTimeout,omitempty"`
+
+	// Timeout for inactivity
+	InactiveTimeout int32 `json:"inactiveTimeout,omitempty"`
 
 	// Set to `true` by the app when running and to `false` when app is stopped
-	Active bool `json:"active,omitempty"`
+	Active *bool `json:"active,omitempty"`
 
 	// List of Eliona project ids for which this endpoint should collect data. For each pair of project id and Hailo smart device identifier found in the configured endpoint an asset is automatically created in Eliona. This mapping of project id and device id on the one hand and the Eliona asset id on the other hand is separately stored by the Hailo app (see `AssetMapping`).
-	ProjIds []string `json:"proj_ids,omitempty"`
+	ProjIds *[]string `json:"projIds,omitempty"`
 }
 
 // AssertConfigurationRequired checks if the required fields are not zero-ed
 func AssertConfigurationRequired(obj Configuration) error {
-	elements := map[string]interface{}{
-		"username":    obj.Username,
-		"password":    obj.Password,
-		"auth_server": obj.AuthServer,
-		"fds_server":  obj.FdsServer,
-	}
-	for name, el := range elements {
-		if isZero := IsZeroValue(el); isZero {
-			return &RequiredError{Field: name}
-		}
-	}
-
 	return nil
 }
 

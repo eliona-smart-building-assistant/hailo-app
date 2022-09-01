@@ -5,7 +5,7 @@ This app collects the data from configurable Hailo FDS endpoints. For each endpo
 
 ## Configuration
 
-The app needs environment variables and database tables for configuration.
+The app needs environment variables and database tables for configuration. To edit the database tables the app provides an own API access.
 
 ### Eliona ###
 
@@ -58,31 +58,13 @@ export LOG_LEVEL=debug # optionally, default is 'info'
 
 The app requires configuration data that remains in the database. To do this, the app creates its own database schema `hailo` during initialization. Some data in this schema should be made editable by Eliona frontend. This allows the app to be configured by the user without direct database access.
 
+To modify and handle the configuration data the Hailo app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml) ([openapi.yaml](https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml)) how the configuration tables should be used. The API is available at `http://servername:80/v1`. The port can be configured with the `API_SERVER_PORT` environment variable.
+
 #### hailo.config
 
-The database table `hailo.config` contains Hailo FDS endpoints. Each row stands for one endpoint with configurable timeouts and polling intervals. This table should be editable by the Eliona frontend. The table is filled during the initialization to demonstrate the configuration. This demo data contains no real endpoint and must be change for proper working.  
+The database table `hailo.config` contains Hailo FDS endpoints. Each row stands for one endpoint with configurable timeouts and polling intervals. This table should be editable by the Eliona frontend. The table is filled during the initialization to demonstrate the configuration. This demo data contains no real endpoint and must be change for proper working.
 
-| Column            | Description                                                                        |
-|-------------------|:-----------------------------------------------------------------------------------|
-| `app_id`          | Id to identify the configured endpoint (automatically by sequence)                 |
-| `config`          | JSON string to configure the endpoint (see below)                                  |
-| `enable`          | Flag to enable or disable the endpoint                                             |
-| `description`     | Description of the endpoint (optional)                                             |
-| `asset_id`        | Id of an parent asset with groups all device assets (optional)                     |
-| `interval_sec`    | Interval in seconds for collecting data from endpoint                              |
-| `auth_timeout`    | Timeout in seconds for authentication server (default `5`s)                        |
-| `request_timeout` | Timeout in seconds for FDS server (default `120`s)                                 |
-| `active`          | Set to `true` by the app when running and to `false` when app is stopped           |
-| `proj_ids`        | List of Eliona project ids for which this endpoint should collect data (see below) |
-
-The `config` column have to contain a JSON to configure the Hailo FDS endpoint:
-
-    {
-      "username":    "Login for auth endpoint"
-      "password":    "Password for auth endpoint"
-      "auth_server": "Url to Hailo auth endpoint"
-      "fds_server":  "Url to Hailo FDS endpoint"
-    }
+For a detailed description have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml) ([openapi.yaml](https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml)).
 
 Insert in the `proj_ids` column all Eliona project ids for which the endpoint should create assets and collect data from all Hailo smart devices. For example, if the column contains `{1, 99}` the app does the following:
 
@@ -92,16 +74,9 @@ Insert in the `proj_ids` column all Eliona project ids for which the endpoint sh
 
 #### hailo.asset
 
-The table `hailo.asset` maps each Hailo smart device to an Eliona asset. For different Eliona projects different assets are used. The app collect and writes data separate for each configured project (see column `proj_ids` above).
+The table `hailo.asset` maps each Hailo smart device to an Eliona asset. For different Eliona projects different assets are used. The app collect and writes data separate for each configured project (see column `proj_ids` above).  The mapping is created automatically by the app. So this table does not necessarily have to be editable via the frontend or displayed in the frontend.
 
-The mapping is created automatically by the app. So this table does not necessarily have to be editable via the frontend or displayed in the frontend.
-
-| Column      | Description                                                                       |
-|-------------|:----------------------------------------------------------------------------------|
-| `config_id` | References the configured endpoint (column `app_id` in table `hailo.config`)      |
-| `device_id` | References to the Hailo smart device (`device_id` from Hailo Smart Hub)           |
-| `asset_id`  | References the asset id from Eliona an maps the device id to an Eliona asset      |
-| `proj_id`   | The project id for which the Eliona asset is created (see column `proj_ids` above |
+For a detailed description have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml) ([openapi.yaml](https://raw.githubusercontent.com/eliona-smart-building-assistant/hailo-app/develop/openapi.yaml)).
 
 If specification of a Hailo smart device is read (at the first time or if new devices are added later) the app looks if there is already a mapping. If so, the app uses the mapped asset id for writing the data. If not, the app creates a new Eliona asset or updates an existing one and inserts the mapping in this table for further use.
 
@@ -119,6 +94,24 @@ Versions of this app prior 2.0 use different mapping of assets and Hailo smart d
         hailo.config, public.asset
     where
         asset_type like 'Hailo%'
+
+## Generation and Implementation ##
+
+The Hailo app uses generators to create API server capabilities and database access.
+
+For the API server the [OpenAPI Generator](https://openapi-generator.tech/docs/generators/openapi-yaml) for go-server is used. The easiest way to generate the server files is to use one of the predefined generation script which use the OpenAPI Generator Docker image.
+
+```
+.\generate-api-server.cmd # Windows
+./generate-api-server.sh # Linux
+```
+
+For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the SQLBoiler implementation. Please note that the database connection in the `sqlboiler.toml` file have to be configured.
+
+```
+.\generate-db.cmd # Windows
+./generate-db.sh # Linux
+```
 
 ## API Reference
 

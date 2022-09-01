@@ -16,9 +16,11 @@
 package main
 
 import (
+	"context"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/apiserver"
+	"hailo/apiservices"
 	"hailo/conf"
 	"hailo/eliona"
 	"hailo/hailo"
@@ -34,33 +36,33 @@ func collectData() {
 	// Check if import or update of assets is requested
 
 	// Load all configured configs from table hailo.config.
-	configs := conf.GetConfigs()
-	if len(configs) <= 0 {
-		log.Fatal("Hailo", "Couldn't read config from configured database.")
+	configs, err := conf.GetConfigs(context.Background())
+	if len(configs) <= 0 || err != nil {
+		log.Fatal("Hailo", "Couldn't read config from configured database: %v", err)
 	}
 
 	// Start collection data for each config
 	for _, config := range configs {
 
 		// Skip config if disabled and set inactive
-		if !config.Enable {
-			if config.Active {
-				conf.SetConfigActive(config.Id, false)
+		if !conf.IsConfigEnabled(config) {
+			if conf.IsConfigActive(config) {
+				conf.SetConfigActiveState(context.Background(), config, false)
 			}
 			continue
 		}
 
 		// Signals, that this config is active
-		if !config.Active {
-			conf.SetConfigActive(config.Id, true)
+		if !conf.IsConfigActive(config) {
+			conf.SetConfigActiveState(context.Background(), config, true)
 			log.Info("Hailo", "Collecting %d initialized with config:\n"+
 				"FDS Fds Endpoint: %s\n"+
 				"FDS Fds Auth Server: %s\n"+
 				"Auth Timeout: %d\n"+
 				"Request Timeout: %d",
 				config.Id,
-				config.FdsConfig.FdsServer,
-				config.FdsConfig.AuthServer,
+				config.FdsServer,
+				config.AuthServer,
 				config.AuthTimeout,
 				config.RequestTimeout)
 		}
@@ -88,8 +90,8 @@ func collectData() {
 // The API endpoints are defined in the openapi.yaml file
 func listenApiRequests() {
 	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "80"), apiserver.NewRouter(
-		apiserver.NewAssetMappingApiController(apiserver.NewAssetMappingApiService()),
-		apiserver.NewConfigurationApiController(apiserver.NewConfigurationApiService()),
+		apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
+		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
 	))
 	log.Fatal("Hailo", "Error in API Server: %v", err)
 }
@@ -97,7 +99,7 @@ func listenApiRequests() {
 // collectDataForConfig reads specification of all devices in the given connection. For all devices found asset
 // data is written. In case of stations (group multiple component devices) data for each component is read and
 // written.
-func collectDataForConfig(config conf.Config) {
+func collectDataForConfig(config apiserver.Configuration) {
 
 	// Read specs from Hailo FDS
 	specs, err := hailo.GetSpecs(config)

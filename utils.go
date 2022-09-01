@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"hailo/apiserver"
 	"hailo/conf"
 	"hailo/hailo"
 	"os"
@@ -60,7 +61,7 @@ func determineArgs() args {
 }
 
 // printSpec gets and prints out the data for the specification
-func printSpec(config conf.Config, spec hailo.Spec) {
+func printSpec(config apiserver.Configuration, spec hailo.Spec) {
 	fmt.Printf(" ---- Device %s ----\n", spec.DeviceId)
 	pretty, _ := json.MarshalIndent(spec, "", "\t")
 	fmt.Println(string(pretty))

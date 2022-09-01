@@ -54,6 +54,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Configuration'
+    post:
+      tags:
+        - Configuration
+      summary: Creates an FDS endpoint
+      description: Creates an FDS endpoint.
+      operationId: postConfiguration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+      responses:
+        201:
+          description: Successfully created a new Hailo FDS endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
 
   /configs/{config-id}:
     get:
@@ -62,7 +80,7 @@ paths:
       summary: Get FDS endpoint
       description: Gets information about the FDS endpoint with the given id
       parameters:
-        - $ref: '#/components/parameters/ConfigId'
+        - $ref: '#/components/parameters/config-id'
       operationId: getConfigurationById
       responses:
         200:
@@ -74,18 +92,34 @@ paths:
     put:
       tags:
         - Configuration
-      summary: Creates or update an FDS endpoint
-      description: Creates an FDS endpoint configuration if no configuration with the same id already exists. If there is such an id the configuration is updated.
+      summary: Updates an FDS endpoint
+      description: Updates an FDS endpoint.
       parameters:
-        - $ref: '#/components/parameters/ConfigId'
-      operationId: putConfiguration
+        - $ref: '#/components/parameters/config-id'
+      operationId: putConfigurationById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
       responses:
         200:
-          description: Successfully created a new or updated an existing configured Hailo FDS endpoint
+          description: Successfully updates a Hailo FDS endpoint
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Configuration'
+    delete:
+      tags:
+        - Configuration
+      summary: Deletes a FDS endpoint
+      description: Removes information about the FDS endpoint with the given id
+      parameters:
+        - $ref: '#/components/parameters/config-id'
+      operationId: deleteConfigurationById
+      responses:
+        204:
+          description: Successfully deletes configured FDS endpoint
 
   /asset-mappings/:
     get:
@@ -99,7 +133,8 @@ paths:
           required: false
           schema:
             type: integer
-            example: 4711
+            format: int64
+
       responses:
         200:
           description: Successfully returned asset mappings
@@ -114,7 +149,7 @@ components:
 
   parameters:
 
-    ConfigId:
+    config-id:
       name: config-id
       in: path
       description: The id of the configured Hailo FDS endpoint
@@ -122,6 +157,8 @@ components:
       required: true
       schema:
         type: integer
+        format: int64
+        example: 4711
 
   schemas:
 
@@ -131,6 +168,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
           description: Internal identifier for the configured endpoint (created automatically). This identifier have to use always if you remove or update existing configured endpoints.
           readOnly: true
           nullable: true
@@ -180,6 +218,10 @@ components:
           type: integer
           description: Timeout in seconds for FDS server
           default: 120
+        inactiveTimeout:
+          type: integer
+          description: Timeout for inactivity
+          default: 86400 # 1 day
         active:
           type: boolean
           readOnly: true

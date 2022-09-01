@@ -31,3 +31,6 @@ create table if not exists hailo.config
     active           boolean default false,
     proj_ids         text[]
 );
+
+-- Makes the new objects available for all other init steps
+commit;

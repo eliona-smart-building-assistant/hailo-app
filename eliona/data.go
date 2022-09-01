@@ -16,19 +16,21 @@
 package eliona
 
 import (
+	"context"
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"hailo/apiserver"
 	"hailo/conf"
 	"hailo/hailo"
 	"math"
 	"time"
 )
 
-func UpsertDataForDevices(config conf.Config, spec hailo.Spec) error {
+func UpsertDataForDevices(config apiserver.Configuration, spec hailo.Spec) error {
 
-	for _, projectId := range config.ProjectIds {
+	for _, projectId := range conf.ProjIds(config) {
 
 		err := upsertDataForDevice(config, projectId, spec)
 		if err != nil {
@@ -65,12 +67,16 @@ func upsertData(subtype api.DataSubtype, time time.Time, assetId int32, payload 
 	return nil
 }
 
-func upsertDataForDevice(config conf.Config, projectId string, spec hailo.Spec) error {
+func upsertDataForDevice(config apiserver.Configuration, projectId string, spec hailo.Spec) error {
 	log.Debug("Hailo", "Upsert data for device: config %d and device '%s'", config.Id, spec.DeviceId)
+	assetId, err := conf.GetAssetId(context.Background(), config, projectId, spec.DeviceId)
+	if err != nil {
+		return err
+	}
 	return upsertData(
 		api.SUBTYPE_INFO,
 		parseTime(spec.Generic.RegistrationDate),
-		*conf.GetAssetId(config.Id, projectId, spec.DeviceId),
+		*assetId,
 		deviceDataPayload{RegistrationDate: spec.Generic.RegistrationDate, Volume: binVolume(spec)},
 	)
 }
@@ -91,14 +97,18 @@ type stationDataPayload struct {
 	Active           bool    `json:"active"`
 }
 
-func UpsertDataForStation(config conf.Config, status hailo.Status) error {
-	for _, projectId := range config.ProjectIds {
+func UpsertDataForStation(config apiserver.Configuration, status hailo.Status) error {
+	for _, projectId := range conf.ProjIds(config) {
 		log.Debug("Hailo", "Upsert data for station: config %d and station '%s'", config.Id, status.DeviceId)
 		lastContact := parseTimeToHours(status.Generic.LastContact)
-		err := upsertData(
+		assetId, err := conf.GetAssetId(context.Background(), config, projectId, status.DeviceId)
+		if err != nil {
+			return err
+		}
+		err = upsertData(
 			api.SUBTYPE_INPUT,
 			parseTime(status.Generic.LastContact),
-			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
+			*assetId,
 			stationDataPayload{
 				int(status.DeviceTypeSpecific.AverageBatteryLevel * 100),
 				lastContact,
@@ -115,7 +125,7 @@ func UpsertDataForStation(config conf.Config, status hailo.Status) error {
 	return nil
 }
 
-func CheckActivity(connection conf.Config, lastContact float64) bool {
+func CheckActivity(connection apiserver.Configuration, lastContact float64) bool {
 	return lastContact < (float64)(connection.InactiveTimeout/3600)
 }
 
@@ -135,15 +145,18 @@ type statusDataPayload struct {
 	ExpectedPercent int `json:"exp_percent"`
 }
 
-func UpsertDataForBin(config conf.Config, status hailo.Status, diag hailo.Diag) error {
-	for _, projectId := range config.ProjectIds {
+func UpsertDataForBin(config apiserver.Configuration, status hailo.Status, diag hailo.Diag) error {
+	for _, projectId := range conf.ProjIds(config) {
 		log.Debug("Hailo", "Upsert data for bin: config %d and bin '%s'", config.Id, status.DeviceId)
-
 		lastContact := parseTimeToHours(status.Generic.LastContact)
-		err := upsertData(
+		assetId, err := conf.GetAssetId(context.Background(), config, projectId, status.DeviceId)
+		if err != nil {
+			return err
+		}
+		err = upsertData(
 			api.SUBTYPE_INPUT,
 			parseTime(status.Generic.LastContact),
-			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
+			*assetId,
 			binDataPayload{
 				int(status.DeviceTypeSpecific.BatteryLevel * 100),
 				status.DeviceTypeSpecific.LastEmptyCount,
@@ -160,11 +173,14 @@ func UpsertDataForBin(config conf.Config, status hailo.Status, diag hailo.Diag) 
 			log.Error("Hailo", "Could not upsert data for bin %s: %v", status.DeviceId, err)
 			return err
 		}
-
+		assetId, err = conf.GetAssetId(context.Background(), config, projectId, status.DeviceId)
+		if err != nil {
+			return err
+		}
 		err = upsertData(
 			api.SUBTYPE_STATUS,
 			parseTime(status.Generic.LastContact),
-			int32(*conf.GetAssetId(config.Id, projectId, status.DeviceId)),
+			*assetId,
 			statusDataPayload{int(diag.DeviceTypeSpecific.ExpectedFillingLevel * 100)},
 		)
 		if err != nil {

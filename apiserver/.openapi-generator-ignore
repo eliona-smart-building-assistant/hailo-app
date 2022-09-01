@@ -6,6 +6,4 @@
 # If the API changes please remove these lines and merge the generated files with the existing ones.
 
 api/**
-#api_asset_mapping_service.go
-#api_configuration_service.go
 README.md

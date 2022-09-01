@@ -13,16 +13,16 @@ package apiserver
 type AssetMapping struct {
 
 	// References the configured endpoint (see `Configuration`)
-	ConfigId int32 `json:"config_id,omitempty"`
+	ConfigId int32 `json:"configId,omitempty"`
 
 	// References to the Hailo smart device (internal id from Hailo FDS for this device)
-	DeviceId string `json:"device_id,omitempty"`
+	DeviceId string `json:"deviceId,omitempty"`
 
 	// The project id for which the Eliona asset is created (see `proj_ids` in `Configuration`)
-	ProjId string `json:"proj_id,omitempty"`
+	ProjId string `json:"projId,omitempty"`
 
 	// References the asset id in Eliona which is automatically created by the app
-	AssetId int32 `json:"asset_id,omitempty"`
+	AssetId int32 `json:"assetId,omitempty"`
 }
 
 // AssertAssetMappingRequired checks if the required fields are not zero-ed

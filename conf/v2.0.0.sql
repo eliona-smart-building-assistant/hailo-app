@@ -31,3 +31,6 @@ create table if not exists hailo.asset
     asset_id        integer not null,
     primary key (config_id, device_id, proj_id, asset_id)
 );
+
+-- Makes the new objects available for all other init steps
+commit;

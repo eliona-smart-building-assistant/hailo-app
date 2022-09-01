@@ -1,0 +1,47 @@
+### Get configs
+GET http://localhost:8033/v1/configs
+
+### Get config
+GET http://localhost:8033/v1/configs/1
+
+### Put config (insert without id)
+PUT http://localhost:8033/v1/configs
+Content-Type: application/json; charset=UTF-8
+
+{
+  "username": "xxx",
+  "password": "yyy",
+  "authServer": "https://7th5pn7m33.execute-api.eu-central-1.amazonaws.com",
+  "fdsServer": "https://fmpxh1uxl6.execute-api.eu-central-1.amazonaws.com/fds/v1",
+  "enable": true,
+  "description": "Hailo FDS demo configuration. Please change to your hailo server endpoints and authentication.",
+  "intervalSec": 60,
+  "authTimeout": 5,
+  "requestTimeout": 120,
+  "inactiveTimeout": 43200,
+  "projIds": [
+    "99"
+  ]
+}
+
+### Put update (with id)
+PUT http://localhost:8033/v1/configs
+Content-Type: application/json; charset=UTF-8
+
+{
+  "id": 6,
+  "username": "***",
+  "password": "***",
+  "authServer": "https://7th5pn7m33.execute-api.eu-central-1.amazonaws.com",
+  "fdsServer": "https://fmpxh1uxl6.execute-api.eu-central-1.amazonaws.com/fds/v1",
+  "enable": true,
+  "description": "Hailo FDS demo configuration. Please change to your hailo server endpoints and authentication.",
+  "intervalSec": 60,
+  "authTimeout": 5,
+  "requestTimeout": 120,
+  "inactiveTimeout": 43200,
+  "projIds": [
+    "99"
+  ]
+}
+

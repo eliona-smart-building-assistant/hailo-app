@@ -10,6 +10,7 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -50,36 +51,68 @@ func NewConfigurationApiController(s ConfigurationApiServicer, opts ...Configura
 func (c *ConfigurationApiController) Routes() Routes {
 	return Routes{
 		{
-			"GetConfiguration",
+			"DeleteConfigurationById",
+			strings.ToUpper("Delete"),
+			"/v1/configs/{config-id}",
+			c.DeleteConfigurationById,
+		},
+		{
+			"GetConfigurationById",
 			strings.ToUpper("Get"),
-			"/v1/config/{config-id}",
-			c.GetConfiguration,
+			"/v1/configs/{config-id}",
+			c.GetConfigurationById,
 		},
 		{
 			"GetConfigurations",
 			strings.ToUpper("Get"),
-			"/v1/config",
+			"/v1/configs",
 			c.GetConfigurations,
 		},
 		{
-			"PutConfiguration",
+			"PostConfiguration",
+			strings.ToUpper("Post"),
+			"/v1/configs",
+			c.PostConfiguration,
+		},
+		{
+			"PutConfigurationById",
 			strings.ToUpper("Put"),
-			"/v1/config/{config-id}",
-			c.PutConfiguration,
+			"/v1/configs/{config-id}",
+			c.PutConfigurationById,
 		},
 	}
 }
 
-// GetConfiguration - Get FDS endpoint
-func (c *ConfigurationApiController) GetConfiguration(w http.ResponseWriter, r *http.Request) {
+// DeleteConfigurationById - Deletes a FDS endpoint
+func (c *ConfigurationApiController) DeleteConfigurationById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	configIdParam, err := parseInt32Parameter(params["config-id"], true)
+	configIdParam, err := parseInt64Parameter(params["config-id"], true)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
 
-	result, err := c.service.GetConfiguration(r.Context(), configIdParam)
+	result, err := c.service.DeleteConfigurationById(r.Context(), configIdParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetConfigurationById - Get FDS endpoint
+func (c *ConfigurationApiController) GetConfigurationById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	configIdParam, err := parseInt64Parameter(params["config-id"], true)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+
+	result, err := c.service.GetConfigurationById(r.Context(), configIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -103,16 +136,51 @@ func (c *ConfigurationApiController) GetConfigurations(w http.ResponseWriter, r 
 
 }
 
-// PutConfiguration - Creates or update an FDS endpoint
-func (c *ConfigurationApiController) PutConfiguration(w http.ResponseWriter, r *http.Request) {
+// PostConfiguration - Creates an FDS endpoint
+func (c *ConfigurationApiController) PostConfiguration(w http.ResponseWriter, r *http.Request) {
+	configurationParam := Configuration{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&configurationParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertConfigurationRequired(configurationParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.PostConfiguration(r.Context(), configurationParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// PutConfigurationById - Updates an FDS endpoint
+func (c *ConfigurationApiController) PutConfigurationById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	configIdParam, err := parseInt32Parameter(params["config-id"], true)
+	configIdParam, err := parseInt64Parameter(params["config-id"], true)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
 
-	result, err := c.service.PutConfiguration(r.Context(), configIdParam)
+	configurationParam := Configuration{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&configurationParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertConfigurationRequired(configurationParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.PutConfigurationById(r.Context(), configIdParam, configurationParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -16,6 +16,7 @@
 package main
 
 import (
+	"context"
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
@@ -70,7 +71,7 @@ func main() {
 	)
 
 	// At the end set all configuration inactive
-	conf.SetAllConfigsInactive()
+	_, _ = conf.SetAllConfigsInactive(context.Background())
 
 	log.Info("Hailo", "Terminate the app.")
 }
