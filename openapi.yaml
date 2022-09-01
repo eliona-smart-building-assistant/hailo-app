@@ -17,7 +17,7 @@ openapi: 3.0.3
 
 info:
   version: 1.0.0
-  title: Hailo API
+  title: Hailo app API
   description: API to access and configure the Hailo app
 externalDocs:
   description: Find out more about the Hailo app
@@ -38,7 +38,7 @@ tags:
 
 paths:
 
-  /config:
+  /configs:
     get:
       tags:
         - Configuration
@@ -55,7 +55,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Configuration'
 
-  /config/{config-id}:
+  /configs/{config-id}:
     get:
       tags:
         - Configuration
@@ -63,7 +63,7 @@ paths:
       description: Gets information about the FDS endpoint with the given id
       parameters:
         - $ref: '#/components/parameters/ConfigId'
-      operationId: getConfiguration
+      operationId: getConfigurationById
       responses:
         200:
           description: Successfully returned configured FDS endpoint
@@ -71,14 +71,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Configuration'
-    post:
+    put:
       tags:
         - Configuration
       summary: Creates or update an FDS endpoint
       description: Creates an FDS endpoint configuration if no configuration with the same id already exists. If there is such an id the configuration is updated.
       parameters:
         - $ref: '#/components/parameters/ConfigId'
-      operationId: postConfiguration
+      operationId: putConfiguration
       responses:
         200:
           description: Successfully created a new or updated an existing configured Hailo FDS endpoint
@@ -87,11 +87,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Configuration'
 
-  /asset/mapping/:
+  /asset-mappings/:
     get:
       tags:
         - Asset Mapping
-      operationId: getAssetMappingsByConfig
+      operationId: getAssetMappings
       parameters:
         - name: config-id
           in: query
@@ -128,51 +128,55 @@ components:
     Configuration:
       type: object
       description: Each configuration defines access to an Hailo FDS endpoint with configurable timeouts and polling intervals. Each FDS endpoint delivers information about a set of Hailo smart devices.
-      required:
-        - username
-        - password
-        - auth_server
-        - fds_server
       properties:
         id:
           type: integer
           description: Internal identifier for the configured endpoint (created automatically). This identifier have to use always if you remove or update existing configured endpoints.
+          readOnly: true
+          nullable: true
         username:
           type: string
           description: Login for authentication endpoint
           example: username
+          nullable: true
         password:
           type: string
           description: Password for authentication endpoint
           example: secret
-        auth_server:
+          nullable: true
+        authServer:
           type: string
           description: Url to Hailo authentication endpoint
           example: https://foo.execute-api.eu-central-1.amazonaws.com
-        fds_server:
+          nullable: true
+        fdsServer:
           type: string
           description: Url to Hailo FDS endpoint
           example: https://bar.execute-api.eu-central-1.amazonaws.com/hailo/v1
+          nullable: true
         enable:
           type: boolean
           description: Flag to enable or disable the endpoint
           default: true
+          nullable: true
         description:
           type: string
           description: Description of the endpoint
           example: This is an example FDS endpoint configuration
-        asset_id:
+          nullable: true
+        assetId:
           type: integer
           description: Id of an parent asset with groups all device assets
-        interval_sec:
+          nullable: true
+        intervalSec:
           type: integer
           description: Interval in seconds for collecting data from endpoint
           default: 60
-        auth_timeout:
+        authTimeout:
           type: integer
           description: Timeout in seconds for authentication server
           default: 5
-        request_timeout:
+        requestTimeout:
           type: integer
           description: Timeout in seconds for FDS server
           default: 120
@@ -180,9 +184,11 @@ components:
           type: boolean
           readOnly: true
           description: Set to `true` by the app when running and to `false` when app is stopped
-        proj_ids:
+          nullable: true
+        projIds:
           type: array
           description: List of Eliona project ids for which this endpoint should collect data. For each pair of project id and Hailo smart device identifier found in the configured endpoint an asset is automatically created in Eliona. This mapping of project id and device id on the one hand and the Eliona asset id on the other hand is separately stored by the Hailo app (see `AssetMapping`).
+          nullable: true
           items:
             type: string
           example:
@@ -194,19 +200,19 @@ components:
       readOnly: true
       description: The `AssetMapping` maps each pair of Eliona project id and Hailo smart device to an Eliona asset. For different Eliona projects different assets are used (see `proj_ids` in `Configuration`). The mapping is created automatically by the app and should used read only.
       properties:
-        config_id:
+        configId:
           type: integer
           description: References the configured endpoint (see `Configuration`)
           example: 4711
-        device_id:
+        deviceId:
           type: string
           description: References to the Hailo smart device (internal id from Hailo FDS for this device)
           example: Hailo_Big-BoxSwingXL_NODE-812341FAB43F667
-        proj_id:
+        projId:
           type: string
           description: The project id for which the Eliona asset is created (see `proj_ids` in `Configuration`)
           example: 99
-        asset_id:
+        assetId:
           type: integer
           description: References the asset id in Eliona which is automatically created by the app
           example: 815

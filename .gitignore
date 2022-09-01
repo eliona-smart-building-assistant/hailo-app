@@ -1,2 +1,4 @@
 *.iml
 .idea/**
+apiserver/.openapi-generator/**
+apiserver/api/**

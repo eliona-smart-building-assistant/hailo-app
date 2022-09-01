@@ -23,7 +23,7 @@ export APPNAME=hailo
 
 #### CONNECTION_STRING
 
-The `CONNECTION_STRING` variable configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). If the app runs as a Docker container inside an Eliona environment, the environment must provide this variable. If you run the app standalone you must set this variable. Otherwise, the app can't be initialized and started.
+The `CONNECTION_STRING` variable configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). Otherwise, the app can't be initialized and started.
 
 ```bash
 export CONNECTION_STRING=postgres://user:pass@localhost:5432/iot
@@ -31,10 +31,19 @@ export CONNECTION_STRING=postgres://user:pass@localhost:5432/iot
 
 #### API_ENDPOINT
 
-The `API_ENDPOINT` variable configures the endpoint to access the [Eliona API](https://github.com/eliona-smart-building-assistant/eliona-api). If the app runs as a Docker container inside an Eliona environment, the environment must provide this variable. If you run the app standalone you must set this variable. Otherwise, the app can't be initialized and started.
+The `API_ENDPOINT` variable configures the endpoint to access the [Eliona API v2](https://github.com/eliona-smart-building-assistant/eliona-api). Otherwise, the app can't be initialized and started.
 
 ```bash
-export API_ENDPOINT=http://localhost:8082/v2
+export API_ENDPOINT=http://api-v2:80/v2
+```
+
+#### API_SERVER_PORT (optional)
+
+You can set `API_SERVER_PORT` to define the port the API server listens. The default value is Port `80`.
+
+
+```bash
+export API_SERVER_PORT=8082 # optionally, default is '80'
 ```
 
 #### DEBUG_LEVEL (optional)
