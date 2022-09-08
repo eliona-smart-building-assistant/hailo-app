@@ -29,9 +29,11 @@ The `CONNECTION_STRING` variable configures the [Eliona database](https://github
 export CONNECTION_STRING=postgres://user:pass@localhost:5432/iot
 ```
 
-#### API_ENDPOINT
+#### API_ENDPOINT and API_TOKEN
 
 The `API_ENDPOINT` variable configures the endpoint to access the [Eliona API v2](https://github.com/eliona-smart-building-assistant/eliona-api). Otherwise, the app can't be initialized and started.
+
+The `API_TOKEN` defines the secret to authenticate the app and access the API.  
 
 ```bash
 export API_ENDPOINT=http://api-v2:80/v2
