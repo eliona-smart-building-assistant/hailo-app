@@ -36,16 +36,16 @@ The `API_ENDPOINT` variable configures the endpoint to access the [Eliona API v2
 The `API_TOKEN` defines the secret to authenticate the app and access the API.  
 
 ```bash
-export API_ENDPOINT=http://api-v2:80/v2
+export API_ENDPOINT=http://api-v2:3000/v2
 ```
 
 #### API_SERVER_PORT (optional)
 
-You can set `API_SERVER_PORT` to define the port the API server listens. The default value is Port `80`.
+You can set `API_SERVER_PORT` to define the port the API server listens. The default value is Port `3000`.
 
 
 ```bash
-export API_SERVER_PORT=8082 # optionally, default is '80'
+export API_SERVER_PORT=3000 # optionally, default is '3000'
 ```
 
 #### DEBUG_LEVEL (optional)

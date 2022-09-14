@@ -89,7 +89,7 @@ func collectData() {
 // listenApiRequests starts an API server and listen for API requests
 // The API endpoints are defined in the openapi.yaml file
 func listenApiRequests() {
-	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "80"), apiserver.NewRouter(
+	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), apiserver.NewRouter(
 		apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
 		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
 	))
