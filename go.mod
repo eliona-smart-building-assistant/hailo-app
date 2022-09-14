@@ -3,7 +3,7 @@ module hailo
 go 1.18
 
 require (
-	github.com/eliona-smart-building-assistant/go-eliona v1.8.0
+	github.com/eliona-smart-building-assistant/go-eliona v1.8.1
 	github.com/eliona-smart-building-assistant/go-eliona-api-client v1.2.3
 	github.com/eliona-smart-building-assistant/go-utils v1.0.6
 	github.com/friendsofgo/errors v0.9.2
