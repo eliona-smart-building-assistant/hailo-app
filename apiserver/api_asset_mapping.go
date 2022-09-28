@@ -50,16 +50,16 @@ func (c *AssetMappingApiController) Routes() Routes {
 		{
 			"GetAssetMappings",
 			strings.ToUpper("Get"),
-			"/v1/asset-mappings/",
+			"/v1/asset-mappings",
 			c.GetAssetMappings,
 		},
 	}
 }
 
-// GetAssetMappings -
+// GetAssetMappings - List all mapped assets
 func (c *AssetMappingApiController) GetAssetMappings(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	configIdParam, err := parseInt64Parameter(query.Get("config-id"), false)
+	configIdParam, err := parseInt64Parameter(query.Get("configId"), false)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return

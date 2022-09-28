@@ -17,8 +17,8 @@ package apiservices
 
 import (
 	"context"
-	"errors"
 	"hailo/apiserver"
+	"hailo/conf"
 	"net/http"
 )
 
@@ -35,11 +35,9 @@ func NewAssetMappingApiService() apiserver.AssetMappingApiServicer {
 
 // GetAssetMappings -
 func (s *AssetMappingApiService) GetAssetMappings(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	// TODO - update GetAssetMappings with the required logic for this service method.
-	// Add api_asset_mapping_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, []AssetMapping{}) or use other options such as http.Ok ...
-	//return Response(200, []AssetMapping{}), nil
-
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetAssetMappings method not implemented")
+	assetMappings, err := conf.GetAssetMappings(ctx, configId)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	return apiserver.Response(http.StatusOK, assetMappings), nil
 }

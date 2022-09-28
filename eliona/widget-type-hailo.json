@@ -16,7 +16,7 @@
       "description": "Level",
       "config": {
         "variant": "vertical",
-        "progressText": "",
+        "progressText": "Level",
         "progressBar": true,
         "valueType": "relative"
       }
@@ -38,7 +38,7 @@
       }
     },
     {
-      "category": "progress",
+      "category": "value",
       "description": "Battery level",
       "config": {
         "variant": "small",

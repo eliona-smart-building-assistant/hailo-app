@@ -17,7 +17,7 @@ package eliona
 
 import (
 	"context"
-	api "github.com/eliona-smart-building-assistant/go-eliona-api-client"
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/log"

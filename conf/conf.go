@@ -21,6 +21,7 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/types"
 	"hailo/apiserver"
 	dbhailo "hailo/db/hailo"
@@ -48,6 +49,22 @@ func GetConfigs(ctx context.Context) ([]apiserver.Configuration, error) {
 	return apiConfigs, nil
 }
 
+func GetAssetMappings(ctx context.Context, configId int64) ([]apiserver.AssetMapping, error) {
+	var mods []qm.QueryMod
+	if configId > 0 {
+		mods = append(mods, dbhailo.AssetWhere.ConfigID.EQ(configId))
+	}
+	dbAssetMappings, err := dbhailo.Assets(mods...).All(ctx, db.Database())
+	if err != nil {
+		return nil, err
+	}
+	var apiAssetMappings []apiserver.AssetMapping
+	for _, dbAssetMapping := range dbAssetMappings {
+		apiAssetMappings = append(apiAssetMappings, *apiAssetMappingFromDbAssetMapping(dbAssetMapping))
+	}
+	return apiAssetMappings, nil
+}
+
 // InsertConfig inserts or updates
 func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
 	dbConfig := dbConfigFromApiConfig(&config)
@@ -70,6 +87,15 @@ func UpsertConfigById(ctx context.Context, configId int64, config apiserver.Conf
 	)
 	config.Id = &dbConfig.AppID
 	return config, err
+}
+
+func apiAssetMappingFromDbAssetMapping(dbAssetMapping *dbhailo.Asset) *apiserver.AssetMapping {
+	var apiAssetMapping apiserver.AssetMapping
+	apiAssetMapping.AssetId = dbAssetMapping.AssetID
+	apiAssetMapping.DeviceId = dbAssetMapping.DeviceID
+	apiAssetMapping.ConfigId = int32(dbAssetMapping.ConfigID)
+	apiAssetMapping.ProjId = dbAssetMapping.ProjID
+	return &apiAssetMapping
 }
 
 func apiConfigFromDbConfig(dbConfig *dbhailo.Config) *apiserver.Configuration {
