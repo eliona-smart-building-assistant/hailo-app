@@ -24,6 +24,7 @@ import (
 func HailoSmartWasteDashboard(projectId string) (api.Dashboard, error) {
 	dashboard := api.Dashboard{}
 	dashboard.Name = "Hailo Smart Waste"
+	dashboard.ProjectId = projectId
 	dashboard.Widgets = []api.Widget{}
 
 	// Process bins

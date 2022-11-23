@@ -1,11 +1,17 @@
 ### Get configs
-GET http://localhost:8033/v1/configs
+GET {{api-server}}/v1/configs
 
 ### Get config
-GET http://localhost:8033/v1/configs/1
+GET {{api-server}}/v1/configs/1
+
+### Dashboards template names
+GET{{api-server}}/v1/dashboard-template-names
+
+### Dashboards template
+GET{{api-server}}/v1/dashboard-templates/Hailo Smart Waste?projectId=99
 
 ### Put config (insert without id)
-PUT http://localhost:8033/v1/configs
+PUT {{api-server}}/v1/configs
 Content-Type: application/json; charset=UTF-8
 
 {
@@ -25,7 +31,7 @@ Content-Type: application/json; charset=UTF-8
 }
 
 ### Put update (with id)
-PUT http://localhost:8033/v1/configs
+PUT {{api-server}}/v1/configs
 Content-Type: application/json; charset=UTF-8
 
 {
