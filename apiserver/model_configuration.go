@@ -51,7 +51,7 @@ type Configuration struct {
 	// Set to `true` by the app when running and to `false` when app is stopped
 	Active *bool `json:"active,omitempty"`
 
-	// List of Eliona project ids for which this endpoint should collect data. For each pair of project id and Hailo smart device identifier found in the configured endpoint an asset is automatically created in Eliona. This mapping of project id and device id on the one hand and the Eliona asset id on the other hand is separately stored by the Hailo app (see `AssetMapping`).
+	// List of Eliona project ids for which this endpoint should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the Hailo app and can read with the AssetMapping endpoint.
 	ProjIds *[]string `json:"projIds,omitempty"`
 }
 

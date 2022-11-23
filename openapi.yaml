@@ -187,7 +187,14 @@ paths:
           required: true
           schema:
             type: string
-            format: Smart Waste
+            example: Smart Waste
+        - name: projectId
+          in: query
+          description: Define the project the dashboard should be
+          required: true
+          schema:
+            type: string
+            example: 99
       responses:
         200:
           description: Successfully returned dashboard template

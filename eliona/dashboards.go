@@ -21,7 +21,7 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 )
 
-func HailoSmartWasteDashboard() (api.Dashboard, error) {
+func HailoSmartWasteDashboard(projectId string) (api.Dashboard, error) {
 	dashboard := api.Dashboard{}
 	dashboard.Name = "Hailo Smart Waste"
 	dashboard.Widgets = []api.Widget{}
@@ -30,6 +30,7 @@ func HailoSmartWasteDashboard() (api.Dashboard, error) {
 	bins, _, err := client.NewClient().AssetsApi.
 		GetAssets(client.AuthenticationContext()).
 		AssetTypeName("Hailo FDS Bin").
+		ProjectId(projectId).
 		Execute()
 	if err != nil {
 		return api.Dashboard{}, err
@@ -118,6 +119,7 @@ func HailoSmartWasteDashboard() (api.Dashboard, error) {
 		GetAssets(client.AuthenticationContext()).
 		AssetTypeName("Hailo FDS Recycling Station").
 		Expansions([]string{"Asset.childrenInfo"}).
+		ProjectId(projectId).
 		Execute()
 	if err != nil {
 		return api.Dashboard{}, err

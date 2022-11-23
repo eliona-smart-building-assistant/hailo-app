@@ -28,9 +28,9 @@ func NewCustomizationApiService() apiserver.CustomizationApiServicer {
 }
 
 // GetDashboardTemplateByName - Get a full dashboard template
-func (s *CustomizationApiService) GetDashboardTemplateByName(ctx context.Context, dashboardTemplateName string) (apiserver.ImplResponse, error) {
+func (s *CustomizationApiService) GetDashboardTemplateByName(ctx context.Context, dashboardTemplateName string, projectId string) (apiserver.ImplResponse, error) {
 	if dashboardTemplateName == "Hailo Smart Waste" {
-		dashboard, err := eliona.HailoSmartWasteDashboard()
+		dashboard, err := eliona.HailoSmartWasteDashboard(projectId)
 		if err != nil {
 			return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 		}

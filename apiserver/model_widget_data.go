@@ -12,19 +12,14 @@ package apiserver
 // WidgetData - Data for a widget
 type WidgetData struct {
 
+	// The internal Id of widget data
+	Id *int32 `json:"id,omitempty"`
+
 	// Position of the element in widget type
 	ElementSequence *int32 `json:"elementSequence,omitempty"`
 
 	// The master asset id of this widget
 	AssetId *int32 `json:"assetId,omitempty"`
-
-	Subtype DataSubtype `json:"subtype,omitempty"`
-
-	// Name of the attribute of the asset type
-	Attribute *string `json:"attribute,omitempty"`
-
-	// Text for frontend
-	Description *string `json:"description,omitempty"`
 
 	// individual config parameters depending on category
 	Data *map[string]interface{} `json:"data,omitempty"`

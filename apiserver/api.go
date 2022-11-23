@@ -65,6 +65,6 @@ type ConfigurationApiServicer interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type CustomizationApiServicer interface {
-	GetDashboardTemplateByName(context.Context, string) (ImplResponse, error)
+	GetDashboardTemplateByName(context.Context, string, string) (ImplResponse, error)
 	GetDashboardTemplateNames(context.Context) (ImplResponse, error)
 }

@@ -12,6 +12,9 @@ package apiserver
 // Widget - A widget on a frontend dashboard
 type Widget struct {
 
+	// The internal Id of widget
+	Id *int32 `json:"id,omitempty"`
+
 	// The name for the type of this widget
 	WidgetTypeName string `json:"widgetTypeName"`
 
@@ -20,6 +23,9 @@ type Widget struct {
 
 	// The master asset id of this widget
 	AssetId *int32 `json:"assetId,omitempty"`
+
+	// Placement order on dashboard; if not set the index in array is taken
+	Sequence *int32 `json:"sequence,omitempty"`
 
 	// List of data for the elements of widget
 	Data *[]WidgetData `json:"data,omitempty"`
