@@ -1,0 +1,11 @@
+{
+  "displayName": {
+    "en": "Hailo app",
+    "de": "Hailo App"
+  },
+  "description": {
+    "en": "The Hailo app enables the Hailo Digital Hub.",
+    "de": "Die Hailo App ermöglicht Zugriff auf den Hailo Digital Hub."
+  },
+  "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
+}
