@@ -21,14 +21,12 @@
 		{
 			"enable": true,
 			"name": "voltage",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"precision": 2,
 			"subtype": "info",
 			"translation": {
@@ -52,14 +50,12 @@
 		{
 			"enable": true,
 			"name": "volumepercent",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "info",
 			"translation": {
 				"de": "Volumen",
@@ -71,14 +67,12 @@
 		{
 			"enable": true,
 			"name": "totalopenings",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "info",
 			"translation": {
 				"de": "Öffnungen",
@@ -89,14 +83,12 @@
 		{
 			"enable": true,
 			"name": "percent",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "info",
 			"type": "device-info"
 		},

@@ -16,10 +16,13 @@
 package eliona
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/api"
+	"context"
+	"fmt"
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-eliona/common"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"hailo/apiserver"
 	"hailo/conf"
 	"hailo/hailo"
 )
@@ -31,16 +34,16 @@ const (
 )
 
 // CreateAssetsIfNecessary create all assets for specification including sub specification if not already exists
-func CreateAssetsIfNecessary(config conf.Config, spec hailo.Spec) error {
+func CreateAssetsIfNecessary(config apiserver.Configuration, spec hailo.Spec) error {
 
-	for _, projectId := range config.ProjectIds {
-		err := createAssetIfNecessary(config, projectId, spec)
+	for _, projectId := range conf.ProjIds(config) {
+		assetId, err := createAssetIfNecessary(config, projectId, nil, spec)
 		if err != nil {
 			log.Error("Hailo", "Could not create assets for device %s: %v", spec.DeviceId, err)
 			return err
 		}
 		for _, subSpec := range spec.DeviceTypeSpecific.ComponentIdList {
-			err = createAssetIfNecessary(config, projectId, subSpec)
+			_, err = createAssetIfNecessary(config, projectId, assetId, subSpec)
 			if err != nil {
 				log.Error("Hailo", "Could not create assets for sub device %s: %v", subSpec.DeviceId, err)
 				return err
@@ -52,35 +55,42 @@ func CreateAssetsIfNecessary(config conf.Config, spec hailo.Spec) error {
 }
 
 // createAssetIfNecessary create asset for specification if not already exists
-func createAssetIfNecessary(config conf.Config, projectId string, specification hailo.Spec) error {
+func createAssetIfNecessary(config apiserver.Configuration, projectId string, parentAssetId *int32, spec hailo.Spec) (*int32, error) {
 
 	// Get known asset id from configuration
-	existingId := conf.GetAssetId(config.Id, projectId, specification.DeviceId)
+	existingId, err := conf.GetAssetId(context.Background(), config, projectId, spec.DeviceId)
 	if existingId != nil {
-		return nil
+		return existingId, nil
 	}
 
-	log.Debug("hailo", "Creating new asset for project %s and specification %s.", projectId, specification.DeviceId)
+	log.Debug("hailo", "Creating new asset for project %s and spec %s.", projectId, spec.DeviceId)
 
 	// If no asset id exists for project and configuration, create a new one
+	name := name(spec)
+	description := description(spec)
+
 	newId, err := asset.UpsertAsset(api.Asset{
-		ProjectId:             projectId,
-		GlobalAssetIdentifier: specification.Generic.DeviceSerial,
-		Name:                  &specification.Generic.Model,
-		AssetType:             assetType(specification),
-		Description:           common.Ptr(specification.DeviceTypeSpecific.Channel + " - " + specification.DeviceTypeSpecific.ContentCategory),
+		ProjectId:               projectId,
+		GlobalAssetIdentifier:   spec.Generic.DeviceSerial,
+		Name:                    *api.NewNullableString(common.Ptr(name)),
+		AssetType:               assetType(spec),
+		Description:             *api.NewNullableString(common.Ptr(description)),
+		ParentLocationalAssetId: *api.NewNullableInt32(parentAssetId),
 	})
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if newId == nil {
+		return nil, fmt.Errorf("cannot create asset: %s", name)
 	}
 
 	// Remember the asset id for further usage
-	err = conf.InsertAsset(config.Id, projectId, specification.DeviceId, *newId)
+	err = conf.InsertAsset(context.Background(), config, projectId, spec.DeviceId, *newId)
 	if err != nil {
-		return err
+		return newId, err
 	}
 
-	return nil
+	return newId, nil
 }
 
 // assetType from Hailo FDS specification
@@ -89,4 +99,16 @@ func assetType(specification hailo.Spec) string {
 		return RecyclingStationAssetType
 	}
 	return BinAssetType
+}
+
+func name(specification hailo.Spec) string {
+	return fmt.Sprintf("%s (%s)", specification.DeviceId, specification.Generic.Model)
+}
+
+func description(specification hailo.Spec) string {
+	if assetType(specification) == RecyclingStationAssetType || specification.DeviceTypeSpecific.Channel == "" || specification.DeviceTypeSpecific.ContentCategory == "" {
+		return fmt.Sprintf("%s", specification.Generic.Model)
+	} else {
+		return fmt.Sprintf("%s (%s - %s)", specification.Generic.Model, specification.DeviceTypeSpecific.Channel, specification.DeviceTypeSpecific.ContentCategory)
+	}
 }

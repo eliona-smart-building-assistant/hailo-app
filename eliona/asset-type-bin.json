@@ -3,14 +3,12 @@
 		{
 			"enable": true,
 			"name": "openings",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"precision": 0,
 			"subtype": "input",
 			"translation": {
@@ -22,20 +20,19 @@
 		{
 			"enable": true,
 			"name": "bat_level",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Batteriestand",
 				"en": "Battery Level"
 			},
-			"type": "battery-voltage"
+			"type": "battery-voltage",
+			"unit": "%"
 		},
 		{
 			"enable": true,
@@ -61,14 +58,12 @@
 		{
 			"enable": true,
 			"name": "totalopenings",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Total Öffnungen",
@@ -79,14 +74,12 @@
 		{
 			"enable": true,
 			"name": "volumepercent",
-			"pipeline": {
-				"mode": "avg",
-				"raster": [
-					"M15",
-					"H1",
-					"DAY"
-				]
-			},
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15",
+				"H1",
+				"DAY"
+			],
 			"subtype": "input",
 			"translation": {
 				"de": "Füllstand",

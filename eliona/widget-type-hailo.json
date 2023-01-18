@@ -1,0 +1,49 @@
+{
+  "name": "Hailo",
+  "custom": true,
+  "translation": {
+    "de": "Hailo",
+    "en": "Hailo",
+    "fr": "Hailo",
+    "it": "Hailo"
+  },
+  "icon": "hailo",
+  "withAlarm": true,
+  "withTimespan": true,
+  "elements": [
+    {
+      "category": "progress",
+      "description": "Level",
+      "config": {
+        "variant": "vertical",
+        "progressText": "Level",
+        "progressBar": true,
+        "valueType": "relative"
+      }
+    },
+    {
+      "category": "value",
+      "description": "Last emptying",
+      "config": {
+        "variant": "small",
+        "valueCount": 1
+      }
+    },
+    {
+      "category": "value",
+      "description": "Expected emptying",
+      "config": {
+        "variant": "small",
+        "valueCount": 1
+      }
+    },
+    {
+      "category": "value",
+      "description": "Battery level",
+      "config": {
+        "variant": "small",
+        "valueCount": 0
+      }
+    }
+  ]
+}

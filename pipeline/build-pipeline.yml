@@ -1,0 +1,52 @@
+#  ______ _ _
+# |  ____| (_)
+# | |__  | |_  ___  _ __   __ _
+# |  __| | | |/ _ \| '_ \ / _` |
+# | |____| | | (_) | | | | (_| |
+# |______|_|_|\___/|_| |_|\__,_|
+#
+name: $(Build.DefinitionName)_$(Build.SourceBranchName)_$(Date:yyyyMMdd)
+
+trigger:
+  batch: true
+  tags:
+    include:
+      - 'v*'
+  branches:
+    include:
+      - develop
+
+resources:
+  repositories:
+    - repository: pipeline
+      type: git
+      name: utils/pipeline
+jobs:
+- template: "jobs/docker-with-cache.yml@pipeline"
+  parameters:
+    registry: public
+    repository: hailo-app
+- job: Trigger_deploy
+  displayName: Trigger deploy
+  dependsOn: Build_and_push
+  condition: succeeded()
+  steps:
+    - task: TriggerBuild@3
+      displayName: 'Trigger deploy experimental'
+      inputs:
+        templateParameters: 'deploymentEnvironment: experimental, repository: hailo-app, deploymentRepository: hailo-app'
+        buildDefinition: ${{ format('{0}_deploy', 'eliona_smart_building_assistant_hailo_app' ) }}
+        useSameBranch: true
+        waitForQueuedBuildsToFinish: false
+        authenticationMethod: 'OAuth Token'
+        password: $(System.AccessToken)
+    - task: TriggerBuild@3
+      displayName: 'Trigger deploy develop'
+      condition: eq(variables['Build.SourceBranchName'], 'develop')
+      inputs:
+        templateParameters: 'deploymentEnvironment: develop, repository: hailo-app, deploymentRepository: hailo-app'
+        buildDefinition: ${{ format('{0}_deploy', 'eliona_smart_building_assistant_hailo_app' ) }}
+        useSameBranch: true
+        waitForQueuedBuildsToFinish: false
+        authenticationMethod: 'OAuth Token'
+        password: $(System.AccessToken)

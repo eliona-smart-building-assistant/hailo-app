@@ -1,2 +1,6 @@
 *.iml
 .idea/**
+apiserver/.openapi-generator/**
+apiserver/api/**
+apiserver/*_service.go
+/apiservices/http-client.private.env.json

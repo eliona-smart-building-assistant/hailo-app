@@ -18,9 +18,10 @@ package hailo
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/eliona-smart-building-assistant/go-eliona/http"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
-	"hailo/conf"
+	"github.com/eliona-smart-building-assistant/go-utils/http"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"github.com/volatiletech/null/v8"
+	"hailo/apiserver"
 	"strings"
 	"sync"
 	"time"
@@ -118,16 +119,16 @@ type Diag struct {
 var tokens sync.Map
 
 // GetSpecs reads the specification for all Hailo smart devices from eliona endpoint
-func GetSpecs(configuration conf.Config) (Specs, error) {
+func GetSpecs(config apiserver.Configuration) (Specs, error) {
 	request, err := http.NewRequestWithBearer(
-		configuration.FdsConfig.FdsServer+FdsSpecificationPath,
-		getToken(configuration),
+		null.StringFromPtr(config.FdsServer).String+FdsSpecificationPath,
+		getToken(config),
 	)
 	if err != nil {
 		return Specs{}, err
 	}
 
-	specs, err := http.Read[Specs](request, time.Duration(configuration.RequestTimeout)*time.Second, true)
+	specs, err := http.Read[Specs](request, time.Duration(config.RequestTimeout)*time.Second, true)
 	if err != nil {
 		return specs, err
 	}
@@ -136,16 +137,17 @@ func GetSpecs(configuration conf.Config) (Specs, error) {
 }
 
 // GetDiag reads the diagnostic data for the given device id
-func GetDiag(configuration conf.Config, deviceId string) (Diag, error) {
+func GetDiag(config apiserver.Configuration, deviceId string) (Diag, error) {
 	request, err := http.NewRequestWithBearer(
-		configuration.FdsConfig.FdsServer+FdsDiagnosticsPath+FdsIdParam+deviceId,
-		getToken(configuration),
+
+		null.StringFromPtr(config.FdsServer).String+FdsDiagnosticsPath+FdsIdParam+deviceId,
+		getToken(config),
 	)
 	if err != nil {
 		return Diag{}, err
 	}
 
-	diagnostics, err := http.Read[Diags](request, time.Duration(configuration.RequestTimeout)*time.Second, true)
+	diagnostics, err := http.Read[Diags](request, time.Duration(config.RequestTimeout)*time.Second, true)
 	if err != nil {
 		return Diag{}, err
 	}
@@ -153,16 +155,16 @@ func GetDiag(configuration conf.Config, deviceId string) (Diag, error) {
 }
 
 // GetStatus reads the status data for the given device id
-func GetStatus(configuration conf.Config, deviceId string) (Status, error) {
+func GetStatus(config apiserver.Configuration, deviceId string) (Status, error) {
 	request, err := http.NewRequestWithBearer(
-		configuration.FdsConfig.FdsServer+FdsStatusPath+FdsIdParam+deviceId,
-		getToken(configuration),
+		null.StringFromPtr(config.FdsServer).String+FdsStatusPath+FdsIdParam+deviceId,
+		getToken(config),
 	)
 	if err != nil {
 		return Status{}, err
 	}
 
-	statuses, err := http.Read[Statuses](request, time.Duration(configuration.RequestTimeout)*time.Second, true)
+	statuses, err := http.Read[Statuses](request, time.Duration(config.RequestTimeout)*time.Second, true)
 	if err != nil {
 		return Status{}, err
 	}
@@ -204,34 +206,34 @@ func isTokenValid(token string) bool {
 }
 
 // getToken creates a new token or delivers a previous token until this token is valid
-func getToken(configuration conf.Config) string {
-	token, found := tokens.Load(configuration.Id)
+func getToken(config apiserver.Configuration) string {
+	token, found := tokens.Load(config.Id)
 	if found {
 		if isTokenValid(token.(string)) {
 			return token.(string)
 		}
 	}
-	token, _ = authenticate(configuration)
-	tokens.Store(configuration.Id, token)
+	token, _ = authenticate(config)
+	tokens.Store(config.Id, token)
 	return token.(string)
 }
 
 // authenticate creates a new token
-func authenticate(configuration conf.Config) (string, error) {
+func authenticate(config apiserver.Configuration) (string, error) {
 
 	log.Info("Hailo", "Create new Authentication token")
 	request, err := http.NewPostRequest(
-		configuration.FdsConfig.AuthServer+AuthApiPath,
+		null.StringFromPtr(config.AuthServer).String+AuthApiPath,
 		auth{
-			UserName: configuration.FdsConfig.Name,
-			Password: configuration.FdsConfig.Password,
+			UserName: null.StringFromPtr(config.Username).String,
+			Password: null.StringFromPtr(config.Password).String,
 		},
 	)
 	if err != nil {
 		return "", err
 	}
 
-	token, err := http.Do(request, time.Duration(configuration.AuthTimeout)*time.Second, true)
+	token, err := http.Do(request, time.Duration(config.AuthTimeout)*time.Second, true)
 	if err != nil {
 		return "", err
 	}

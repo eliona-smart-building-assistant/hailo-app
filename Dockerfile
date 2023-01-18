@@ -13,18 +13,21 @@
 #  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM golang:1.18-alpine3.15 AS build
+FROM golang:1.18-alpine3.15 AS BUILDER
 
 WORKDIR /
-COPY . ./
-
+COPY go.mod go.sum ./
 RUN go mod download
+COPY . ./
 RUN go build -o ../app
 
 FROM alpine:3.15 AS target
 
-COPY --from=build /app ./
+COPY --from=BUILDER /app ./
 COPY conf/*.sql ./conf/
+COPY eliona/*.json ./eliona/
+
+ENV APPNAME=hailo
 
 ENV TZ=Europe/Zurich
 CMD [ "/app" ]

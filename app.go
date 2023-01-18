@@ -16,11 +16,15 @@
 package main
 
 import (
-	"github.com/eliona-smart-building-assistant/go-eliona/common"
-	"github.com/eliona-smart-building-assistant/go-eliona/log"
+	"context"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"hailo/apiserver"
+	"hailo/apiservices"
 	"hailo/conf"
 	"hailo/eliona"
 	"hailo/hailo"
+	"net/http"
 	"time"
 )
 
@@ -32,33 +36,33 @@ func collectData() {
 	// Check if import or update of assets is requested
 
 	// Load all configured configs from table hailo.config.
-	configs := conf.GetConfigs()
-	if len(configs) <= 0 {
-		log.Fatal("Hailo", "Couldn't read config from configured database.")
+	configs, err := conf.GetConfigs(context.Background())
+	if len(configs) <= 0 || err != nil {
+		log.Fatal("Hailo", "Couldn't read config from configured database: %v", err)
 	}
 
 	// Start collection data for each config
 	for _, config := range configs {
 
 		// Skip config if disabled and set inactive
-		if !config.Enable {
-			if config.Active {
-				conf.SetConfigActive(config.Id, false)
+		if !conf.IsConfigEnabled(config) {
+			if conf.IsConfigActive(config) {
+				conf.SetConfigActiveState(context.Background(), config, false)
 			}
 			continue
 		}
 
 		// Signals, that this config is active
-		if !config.Active {
-			conf.SetConfigActive(config.Id, true)
+		if !conf.IsConfigActive(config) {
+			conf.SetConfigActiveState(context.Background(), config, true)
 			log.Info("Hailo", "Collecting %d initialized with config:\n"+
 				"FDS Fds Endpoint: %s\n"+
 				"FDS Fds Auth Server: %s\n"+
 				"Auth Timeout: %d\n"+
 				"Request Timeout: %d",
 				config.Id,
-				config.FdsConfig.FdsServer,
-				config.FdsConfig.AuthServer,
+				config.FdsServer,
+				config.AuthServer,
 				config.AuthTimeout,
 				config.RequestTimeout)
 		}
@@ -82,10 +86,21 @@ func collectData() {
 	}
 }
 
-// collectDataForConfig reads specification of all devices in the given connection. For all devices found heap
-// data is written. In case of stations (group multiple component devices) heap data for each component is read and
+// listenApiRequests starts an API server and listen for API requests
+// The API endpoints are defined in the openapi.yaml file
+func listenApiRequests() {
+	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), apiserver.NewRouter(
+		apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
+		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
+		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
+	))
+	log.Fatal("Hailo", "Error in API Server: %v", err)
+}
+
+// collectDataForConfig reads specification of all devices in the given connection. For all devices found asset
+// data is written. In case of stations (group multiple component devices) data for each component is read and
 // written.
-func collectDataForConfig(config conf.Config) {
+func collectDataForConfig(config apiserver.Configuration) {
 
 	// Read specs from Hailo FDS
 	specs, err := hailo.GetSpecs(config)
@@ -94,7 +109,7 @@ func collectDataForConfig(config conf.Config) {
 		return
 	}
 
-	// For each spec write heap data
+	// For each spec write asset data
 	for _, spec := range specs.Data {
 
 		// If necessary create assets in eliona
@@ -103,8 +118,8 @@ func collectDataForConfig(config conf.Config) {
 			return
 		}
 
-		// Writing Heap for specification
-		err = eliona.UpsertHeapForDevices(config, spec)
+		// Writing asset data for specification
+		err = eliona.UpsertDataForDevices(config, spec)
 		if err != nil {
 			return
 		}
@@ -120,7 +135,7 @@ func collectDataForConfig(config conf.Config) {
 		if status.IsStation() {
 
 			// Upsert status for station
-			err = eliona.UpsertHeapForStation(config, status)
+			err = eliona.UpsertDataForStation(config, status)
 			if err != nil {
 				return
 			}
@@ -136,7 +151,7 @@ func collectDataForConfig(config conf.Config) {
 				}
 
 				// Upsert status and diag for station components
-				err = eliona.UpsertHeapForBin(config, compStatus, diag)
+				err = eliona.UpsertDataForBin(config, compStatus, diag)
 				if err != nil {
 					return
 				}
@@ -153,7 +168,7 @@ func collectDataForConfig(config conf.Config) {
 			}
 
 			// Upsert status and diag for station single container
-			err = eliona.UpsertHeapForBin(config, status, diag)
+			err = eliona.UpsertDataForBin(config, status, diag)
 			if err != nil {
 				return
 			}
