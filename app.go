@@ -93,6 +93,7 @@ func listenApiRequests() {
 		apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
 		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
 		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
+		apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
 	))
 	log.Fatal("Hailo", "Error in API Server: %v", err)
 }

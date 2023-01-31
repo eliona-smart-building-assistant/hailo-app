@@ -41,6 +41,9 @@ tags:
     externalDocs:
       url: https://github.com/eliona-smart-building-assistant/hailo-app
 
+  - name: Version
+    description: API version
+
 paths:
 
   /configs:
@@ -201,9 +204,40 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/develop/openapi.yaml#/components/schemas/Dashboard'
+                $ref: 'https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/main/openapi.yaml#/components/schemas/Dashboard'
         404:
           description: Template with name not found
+
+  /version:
+    get:
+      summary: Version of the API
+      description: Gets information about the APIs version.
+      operationId: getVersion
+      tags:
+        - Version
+      responses:
+        200:
+          description: Successfully returned the APIs version.
+          content:
+            application/json:
+              schema:
+                type: object
+
+
+  /version/openapi.json:
+    get:
+      summary: OpenAPI specification for this API version
+      description: Gets specification for this API version as an openapi.json file.
+      operationId: getOpenAPI
+      tags:
+        - Version
+      responses:
+        200:
+          description: Successfully returned the openapi.json file.
+          content:
+            application/json:
+              schema:
+                type: object
 
 components:
 

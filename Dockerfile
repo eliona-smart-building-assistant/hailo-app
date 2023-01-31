@@ -15,17 +15,23 @@
 
 FROM golang:1.18-alpine3.15 AS BUILDER
 
+RUN apk add git
+
 WORKDIR /
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . ./
-RUN go build -o ../app
+
+RUN DATE=$(date) && \
+    GIT_COMMIT=$(git rev-list -1 HEAD) && \
+    go build -ldflags "-X 'template/apiservices.BuildTimestamp=$DATE' -X 'api-v2/apiservices.GitCommit=$GIT_COMMIT'" -o ../app
 
 FROM alpine:3.15 AS target
 
 COPY --from=BUILDER /app ./
 COPY conf/*.sql ./conf/
 COPY eliona/*.json ./eliona/
+COPY apiserver/openapi.json /
 
 ENV APPNAME=hailo
 

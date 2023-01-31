@@ -1,0 +1,693 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "description" : "API to access and configure the Hailo app",
+    "title" : "Hailo app API",
+    "version" : "1.0.0"
+  },
+  "externalDocs" : {
+    "description" : "Find out more about the Hailo app",
+    "url" : "https://github.com/eliona-smart-building-assistant/hailo-app"
+  },
+  "servers" : [ {
+    "url" : "http://hailo/v1"
+  } ],
+  "tags" : [ {
+    "description" : "Configure access to Hailo smart devices",
+    "externalDocs" : {
+      "url" : "https://github.com/eliona-smart-building-assistant/hailo-app"
+    },
+    "name" : "Configuration"
+  }, {
+    "description" : "Hailo smart devices mapped to Eliona",
+    "externalDocs" : {
+      "url" : "https://github.com/eliona-smart-building-assistant/hailo-app"
+    },
+    "name" : "Asset Mapping"
+  }, {
+    "description" : "Help to customize Eliona",
+    "externalDocs" : {
+      "url" : "https://github.com/eliona-smart-building-assistant/hailo-app"
+    },
+    "name" : "Customization"
+  }, {
+    "description" : "API version",
+    "name" : "Version"
+  } ],
+  "paths" : {
+    "/configs" : {
+      "get" : {
+        "description" : "Gets information about all configured Hailo FDS endpoints.",
+        "operationId" : "getConfigurations",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/Configuration"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "Successfully returned configured FDS endpoints"
+          }
+        },
+        "summary" : "Get all FDS endpoints",
+        "tags" : [ "Configuration" ]
+      },
+      "post" : {
+        "description" : "Creates an FDS endpoint.",
+        "operationId" : "postConfiguration",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Configuration"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Configuration"
+                }
+              }
+            },
+            "description" : "Successfully created a new Hailo FDS endpoint"
+          }
+        },
+        "summary" : "Creates an FDS endpoint",
+        "tags" : [ "Configuration" ]
+      }
+    },
+    "/configs/{config-id}" : {
+      "delete" : {
+        "description" : "Removes information about the FDS endpoint with the given id",
+        "operationId" : "deleteConfigurationById",
+        "parameters" : [ {
+          "description" : "The id of the configured Hailo FDS endpoint",
+          "example" : 4711,
+          "explode" : false,
+          "in" : "path",
+          "name" : "config-id",
+          "required" : true,
+          "schema" : {
+            "example" : 4711,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Successfully deletes configured FDS endpoint"
+          }
+        },
+        "summary" : "Deletes a FDS endpoint",
+        "tags" : [ "Configuration" ]
+      },
+      "get" : {
+        "description" : "Gets information about the FDS endpoint with the given id",
+        "operationId" : "getConfigurationById",
+        "parameters" : [ {
+          "description" : "The id of the configured Hailo FDS endpoint",
+          "example" : 4711,
+          "explode" : false,
+          "in" : "path",
+          "name" : "config-id",
+          "required" : true,
+          "schema" : {
+            "example" : 4711,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Configuration"
+                }
+              }
+            },
+            "description" : "Successfully returned configured FDS endpoint"
+          }
+        },
+        "summary" : "Get FDS endpoint",
+        "tags" : [ "Configuration" ]
+      },
+      "put" : {
+        "description" : "Updates an FDS endpoint.",
+        "operationId" : "putConfigurationById",
+        "parameters" : [ {
+          "description" : "The id of the configured Hailo FDS endpoint",
+          "example" : 4711,
+          "explode" : false,
+          "in" : "path",
+          "name" : "config-id",
+          "required" : true,
+          "schema" : {
+            "example" : 4711,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Configuration"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Configuration"
+                }
+              }
+            },
+            "description" : "Successfully updates a Hailo FDS endpoint"
+          }
+        },
+        "summary" : "Updates an FDS endpoint",
+        "tags" : [ "Configuration" ]
+      }
+    },
+    "/asset-mappings" : {
+      "get" : {
+        "description" : "Delivers a List of all assets mapped to smart waste devices",
+        "operationId" : "getAssetMappings",
+        "parameters" : [ {
+          "description" : "Id of `Configuration` for which the Hail smart devices are mapped",
+          "explode" : true,
+          "in" : "query",
+          "name" : "configId",
+          "required" : false,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/AssetMapping"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "Successfully returned asset mappings"
+          }
+        },
+        "summary" : "List all mapped assets",
+        "tags" : [ "Asset Mapping" ]
+      }
+    },
+    "/dashboard-template-names" : {
+      "get" : {
+        "description" : "Delivers all names for which the app provides dashboard templates.",
+        "operationId" : "getDashboardTemplateNames",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "description" : "Names of available dashboard templates",
+                  "items" : {
+                    "description" : "Name of the dashboard template",
+                    "type" : "string"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "Successfully returned list of template names"
+          }
+        },
+        "summary" : "List available dashboard templates",
+        "tags" : [ "Customization" ]
+      }
+    },
+    "/dashboard-templates/{dashboard-template-name}" : {
+      "get" : {
+        "description" : "Delivers a dashboard template which can assigned to users in Eliona",
+        "externalDocs" : {
+          "description" : "The API to assign the dashboard to users in Eliona (see post /dashboards endpoint).",
+          "url" : "https://github.com/eliona-smart-building-assistant/eliona-api"
+        },
+        "operationId" : "getDashboardTemplateByName",
+        "parameters" : [ {
+          "description" : "Name of the dashboard template",
+          "explode" : false,
+          "in" : "path",
+          "name" : "dashboard-template-name",
+          "required" : true,
+          "schema" : {
+            "example" : "Smart Waste",
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "description" : "Define the project the dashboard should be",
+          "explode" : true,
+          "in" : "query",
+          "name" : "projectId",
+          "required" : true,
+          "schema" : {
+            "example" : "99",
+            "type" : "string"
+          },
+          "style" : "form"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Dashboard"
+                }
+              }
+            },
+            "description" : "Successfully returned dashboard template"
+          },
+          "404" : {
+            "description" : "Template with name not found"
+          }
+        },
+        "summary" : "Get a full dashboard template",
+        "tags" : [ "Customization" ]
+      }
+    },
+    "/version" : {
+      "get" : {
+        "description" : "Gets information about the APIs version.",
+        "operationId" : "getVersion",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Successfully returned the APIs version."
+          }
+        },
+        "summary" : "Version of the API",
+        "tags" : [ "Version" ]
+      }
+    },
+    "/version/openapi.json" : {
+      "get" : {
+        "description" : "Gets specification for this API version as an openapi.json file.",
+        "operationId" : "getOpenAPI",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Successfully returned the openapi.json file."
+          }
+        },
+        "summary" : "OpenAPI specification for this API version",
+        "tags" : [ "Version" ]
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "config-id" : {
+        "description" : "The id of the configured Hailo FDS endpoint",
+        "example" : 4711,
+        "explode" : false,
+        "in" : "path",
+        "name" : "config-id",
+        "required" : true,
+        "schema" : {
+          "example" : 4711,
+          "format" : "int64",
+          "type" : "integer"
+        },
+        "style" : "simple"
+      }
+    },
+    "schemas" : {
+      "Configuration" : {
+        "description" : "Each configuration defines access to an Hailo FDS endpoint with configurable timeouts and polling intervals. Each FDS endpoint delivers information about a set of Hailo smart devices.",
+        "properties" : {
+          "id" : {
+            "description" : "Internal identifier for the configured endpoint (created automatically). This identifier have to use always if you remove or update existing configured endpoints.",
+            "format" : "int64",
+            "nullable" : true,
+            "readOnly" : true,
+            "type" : "integer"
+          },
+          "username" : {
+            "description" : "Login for authentication endpoint",
+            "example" : "username",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "password" : {
+            "description" : "Password for authentication endpoint",
+            "example" : "secret",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "authServer" : {
+            "description" : "Url to Hailo authentication endpoint",
+            "example" : "https://foo.execute-api.eu-central-1.amazonaws.com",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "fdsServer" : {
+            "description" : "Url to Hailo FDS endpoint",
+            "example" : "https://bar.execute-api.eu-central-1.amazonaws.com/hailo/v1",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "enable" : {
+            "default" : true,
+            "description" : "Flag to enable or disable the endpoint",
+            "nullable" : true,
+            "type" : "boolean"
+          },
+          "description" : {
+            "description" : "Description of the endpoint",
+            "example" : "This is an example FDS endpoint configuration",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "assetId" : {
+            "description" : "Id of an parent asset with groups all device assets",
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "intervalSec" : {
+            "default" : 60,
+            "description" : "Interval in seconds for collecting data from endpoint",
+            "type" : "integer"
+          },
+          "authTimeout" : {
+            "default" : 5,
+            "description" : "Timeout in seconds for authentication server",
+            "type" : "integer"
+          },
+          "requestTimeout" : {
+            "default" : 120,
+            "description" : "Timeout in seconds for FDS server",
+            "type" : "integer"
+          },
+          "inactiveTimeout" : {
+            "default" : 86400,
+            "description" : "Timeout for inactivity",
+            "type" : "integer"
+          },
+          "active" : {
+            "description" : "Set to `true` by the app when running and to `false` when app is stopped",
+            "nullable" : true,
+            "readOnly" : true,
+            "type" : "boolean"
+          },
+          "projIds" : {
+            "description" : "List of Eliona project ids for which this endpoint should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the Hailo app and can read with the AssetMapping endpoint.",
+            "example" : [ 42, 99 ],
+            "items" : {
+              "type" : "string"
+            },
+            "nullable" : true,
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "AssetMapping" : {
+        "description" : "The `AssetMapping` maps each pair of Eliona project id and Hailo smart device to an Eliona asset. For different Eliona projects different assets are used (see `proj_ids` in `Configuration`). The mapping is created automatically by the app and should used read only.",
+        "properties" : {
+          "configId" : {
+            "description" : "References the configured endpoint (see `Configuration`)",
+            "example" : 4711,
+            "type" : "integer"
+          },
+          "deviceId" : {
+            "description" : "References to the Hailo smart device (internal id from Hailo FDS for this device)",
+            "example" : "Hailo_Big-BoxSwingXL_NODE-812341FAB43F667",
+            "type" : "string"
+          },
+          "projId" : {
+            "description" : "The project id for which the Eliona asset is created (see `proj_ids` in `Configuration`)",
+            "example" : "99",
+            "type" : "string"
+          },
+          "assetId" : {
+            "description" : "References the asset id in Eliona which is automatically created by the app",
+            "example" : 815,
+            "type" : "integer"
+          }
+        },
+        "readOnly" : true,
+        "type" : "object"
+      },
+      "Dashboard" : {
+        "description" : "A frontend dashboard",
+        "example" : {
+          "sequence" : 1,
+          "name" : "Weather info",
+          "id" : 4711,
+          "widgets" : [ {
+            "sequence" : 1,
+            "data" : [ {
+              "elementSequence" : 1,
+              "data" : {
+                "subtype" : "input",
+                "attribute" : "temperature",
+                "key" : "humidity"
+              },
+              "assetId" : 4711,
+              "id" : 4711
+            }, {
+              "elementSequence" : 1,
+              "data" : {
+                "subtype" : "input",
+                "attribute" : "temperature",
+                "key" : "humidity"
+              },
+              "assetId" : 4711,
+              "id" : 4711
+            } ],
+            "assetId" : 4711,
+            "details" : { },
+            "id" : 4711,
+            "widgetTypeName" : "Weather"
+          }, {
+            "sequence" : 1,
+            "data" : [ {
+              "elementSequence" : 1,
+              "data" : {
+                "subtype" : "input",
+                "attribute" : "temperature",
+                "key" : "humidity"
+              },
+              "assetId" : 4711,
+              "id" : 4711
+            }, {
+              "elementSequence" : 1,
+              "data" : {
+                "subtype" : "input",
+                "attribute" : "temperature",
+                "key" : "humidity"
+              },
+              "assetId" : 4711,
+              "id" : 4711
+            } ],
+            "assetId" : 4711,
+            "details" : { },
+            "id" : 4711,
+            "widgetTypeName" : "Weather"
+          } ],
+          "projectId" : "99",
+          "userId" : "42"
+        },
+        "properties" : {
+          "id" : {
+            "description" : "The internal Id of dashboard",
+            "example" : 4711,
+            "nullable" : true,
+            "readOnly" : true,
+            "type" : "integer"
+          },
+          "name" : {
+            "description" : "The name for this dashboard",
+            "example" : "Weather info",
+            "type" : "string"
+          },
+          "projectId" : {
+            "description" : "ID of the project to which the dashboard belongs",
+            "example" : "99",
+            "type" : "string"
+          },
+          "userId" : {
+            "description" : "ID of the user who owns the dashboard",
+            "example" : "42",
+            "type" : "string"
+          },
+          "sequence" : {
+            "default" : 0,
+            "description" : "The sequence of the dashboard",
+            "example" : 1,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "widgets" : {
+            "description" : "List of widgets on this dashboard (order matches the order of widgets on the dashboard)",
+            "items" : {
+              "$ref" : "#/components/schemas/Widget"
+            },
+            "nullable" : true,
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "projectId", "userId" ],
+        "type" : "object"
+      },
+      "Widget" : {
+        "description" : "A widget on a frontend dashboard",
+        "example" : {
+          "sequence" : 1,
+          "data" : [ {
+            "elementSequence" : 1,
+            "data" : {
+              "subtype" : "input",
+              "attribute" : "temperature",
+              "key" : "humidity"
+            },
+            "assetId" : 4711,
+            "id" : 4711
+          }, {
+            "elementSequence" : 1,
+            "data" : {
+              "subtype" : "input",
+              "attribute" : "temperature",
+              "key" : "humidity"
+            },
+            "assetId" : 4711,
+            "id" : 4711
+          } ],
+          "assetId" : 4711,
+          "details" : { },
+          "id" : 4711,
+          "widgetTypeName" : "Weather"
+        },
+        "properties" : {
+          "id" : {
+            "description" : "The internal Id of widget",
+            "example" : 4711,
+            "nullable" : true,
+            "readOnly" : true,
+            "type" : "integer"
+          },
+          "widgetTypeName" : {
+            "description" : "The name for the type of this widget",
+            "example" : "Weather",
+            "type" : "string"
+          },
+          "details" : {
+            "description" : "Detailed configuration depending on the widget type",
+            "example" : { },
+            "nullable" : true,
+            "type" : "object"
+          },
+          "assetId" : {
+            "description" : "The master asset id of this widget",
+            "example" : 4711,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "sequence" : {
+            "description" : "Placement order on dashboard; if not set the index in array is taken",
+            "example" : 1,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "List of data for the elements of widget",
+            "items" : {
+              "$ref" : "#/components/schemas/WidgetData"
+            },
+            "nullable" : true,
+            "type" : "array"
+          }
+        },
+        "required" : [ "widgetTypeName", "width" ],
+        "type" : "object"
+      },
+      "WidgetData" : {
+        "description" : "Data for a widget",
+        "example" : {
+          "elementSequence" : 1,
+          "data" : {
+            "subtype" : "input",
+            "attribute" : "temperature",
+            "key" : "humidity"
+          },
+          "assetId" : 4711,
+          "id" : 4711
+        },
+        "properties" : {
+          "id" : {
+            "description" : "The internal Id of widget data",
+            "example" : 4711,
+            "nullable" : true,
+            "readOnly" : true,
+            "type" : "integer"
+          },
+          "elementSequence" : {
+            "description" : "Position of the element in widget type",
+            "example" : 1,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "assetId" : {
+            "description" : "The master asset id of this widget",
+            "example" : 4711,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "individual config parameters depending on category",
+            "example" : {
+              "subtype" : "input",
+              "attribute" : "temperature",
+              "key" : "humidity"
+            },
+            "nullable" : true,
+            "type" : "object"
+          }
+        },
+        "type" : "object"
+      }
+    }
+  }
+}
