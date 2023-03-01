@@ -1,5 +1,5 @@
-# Hailo App
-The [Hailo app](https://github.com/eliona-smart-building-assistant/hailo-app) enables the [Hailo Digital Hub](https://www.hailodigitalhub.de/) for an [Eliona](https://www.eliona.io/) enviroment.
+# Eliona app to access Hailo devices
+This [Eliona app for Hailo](https://github.com/eliona-smart-building-assistant/hailo-app) enables the [Hailo Digital Hub](https://www.hailodigitalhub.de/) for an [Eliona](https://www.eliona.io/) enviroment.
 
 This app collects the data from configurable Hailo FDS endpoints. For each endpoint the app read the data for Hailo smart devices (smart waste stations and smart waste bins). Each device corresponds with an Eliona asset, which are created automatically, and writes various Eliona data for these assets.
 
