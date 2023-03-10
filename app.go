@@ -70,19 +70,19 @@ func collectData() {
 		// Runs the ReadNode. If the current node is currently running, skip the execution
 		// After the execution sleeps the configured timeout. During this timeout no further
 		// process for this config (appId) is started to read the data.
-		common.RunOnce(func() {
+		common.RunOnceWithParam(func(c apiserver.Configuration) {
 
-			log.Info("Hailo", "Collecting %d started", config.Id)
+			log.Info("Hailo", "Collecting %d started", c.Id)
 
 			// Collect data for the config
-			collectDataForConfig(config)
+			collectDataForConfig(c)
 
-			log.Info("Hailo", "Collecting %d finished", config.Id)
+			log.Info("Hailo", "Collecting %d finished", c.Id)
 
 			// Waits until the time is excited
-			time.Sleep(time.Second * time.Duration(config.IntervalSec))
+			time.Sleep(time.Second * time.Duration(c.IntervalSec))
 
-		}, config.Id)
+		}, config, config.Id)
 	}
 }
 
