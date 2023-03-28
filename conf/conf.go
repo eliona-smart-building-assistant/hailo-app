@@ -17,6 +17,7 @@ package conf
 
 import (
 	"context"
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/volatiletech/null/v8"
@@ -38,7 +39,7 @@ type FdsConfig struct {
 
 // GetConfigs reads all configured endpoints for a Hailo Digital Hub
 func GetConfigs(ctx context.Context) ([]apiserver.Configuration, error) {
-	dbConfigs, err := dbhailo.Configs().All(ctx, db.Database())
+	dbConfigs, err := dbhailo.Configs().All(ctx, db.Database(app.AppName()))
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func GetAssetMappings(ctx context.Context, configId int64) ([]apiserver.AssetMap
 	if configId > 0 {
 		mods = append(mods, dbhailo.AssetWhere.ConfigID.EQ(configId))
 	}
-	dbAssetMappings, err := dbhailo.Assets(mods...).All(ctx, db.Database())
+	dbAssetMappings, err := dbhailo.Assets(mods...).All(ctx, db.Database(app.AppName()))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func GetAssetMappings(ctx context.Context, configId int64) ([]apiserver.AssetMap
 // InsertConfig inserts or updates
 func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
 	dbConfig := dbConfigFromApiConfig(&config)
-	err := dbConfig.Insert(ctx, db.Database(), boil.Blacklist(dbhailo.ConfigColumns.AppID))
+	err := dbConfig.Insert(ctx, db.Database(app.AppName()), boil.Blacklist(dbhailo.ConfigColumns.AppID))
 	if err != nil {
 		return apiserver.Configuration{}, err
 	}
@@ -80,7 +81,7 @@ func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserve
 func UpsertConfigById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.Configuration, error) {
 	dbConfig := dbConfigFromApiConfig(&config)
 	dbConfig.AppID = configId
-	err := dbConfig.Upsert(ctx, db.Database(), true,
+	err := dbConfig.Upsert(ctx, db.Database(app.AppName()), true,
 		[]string{dbhailo.ConfigColumns.AppID},
 		boil.Blacklist(dbhailo.ConfigColumns.AppID),
 		boil.Infer(),
@@ -152,7 +153,7 @@ func getInactiveTimeout(config *dbhailo.Config) int32 {
 
 // GetConfig reads configured endpoints to a Hailo Digital Hub
 func GetConfig(ctx context.Context, configId int64) (*apiserver.Configuration, error) {
-	dbConfigs, err := dbhailo.Configs(dbhailo.ConfigWhere.AppID.EQ(configId)).All(ctx, db.Database())
+	dbConfigs, err := dbhailo.Configs(dbhailo.ConfigWhere.AppID.EQ(configId)).All(ctx, db.Database(app.AppName()))
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +165,7 @@ func GetConfig(ctx context.Context, configId int64) (*apiserver.Configuration, e
 
 // DeleteConfig reads configured endpoints to a Hailo Digital Hub
 func DeleteConfig(ctx context.Context, configId int64) (int64, error) {
-	return dbhailo.Configs(dbhailo.ConfigWhere.AppID.EQ(configId)).DeleteAll(ctx, db.Database())
+	return dbhailo.Configs(dbhailo.ConfigWhere.AppID.EQ(configId)).DeleteAll(ctx, db.Database(app.AppName()))
 }
 
 // BuildFdsConfig create a config object with the given parameters and default values
@@ -186,7 +187,7 @@ func GetAssetId(ctx context.Context, config apiserver.Configuration, projId stri
 		dbhailo.AssetWhere.ConfigID.EQ(null.Int64FromPtr(config.Id).Int64),
 		dbhailo.AssetWhere.ProjID.EQ(projId),
 		dbhailo.AssetWhere.DeviceID.EQ(deviceId),
-	).All(ctx, db.Database())
+	).All(ctx, db.Database(app.AppName()))
 	if err != nil || len(dbAssets) == 0 {
 		return nil, err
 	}
@@ -199,13 +200,13 @@ func InsertAsset(ctx context.Context, config apiserver.Configuration, projId str
 	dbAsset.ProjID = projId
 	dbAsset.DeviceID = deviceId
 	dbAsset.AssetID = assetId
-	return dbAsset.Insert(ctx, db.Database(), boil.Infer())
+	return dbAsset.Insert(ctx, db.Database(app.AppName()), boil.Infer())
 }
 
 func SetConfigActiveState(ctx context.Context, config apiserver.Configuration, state bool) (int64, error) {
 	return dbhailo.Configs(
 		dbhailo.ConfigWhere.AppID.EQ(null.Int64FromPtr(config.Id).Int64),
-	).UpdateAll(ctx, db.Database(), dbhailo.M{
+	).UpdateAll(ctx, db.Database(app.AppName()), dbhailo.M{
 		dbhailo.ConfigColumns.Active: state,
 	})
 }
@@ -226,7 +227,7 @@ func IsConfigEnabled(config apiserver.Configuration) bool {
 }
 
 func SetAllConfigsInactive(ctx context.Context) (int64, error) {
-	return dbhailo.Configs().UpdateAll(ctx, db.Database(), dbhailo.M{
+	return dbhailo.Configs().UpdateAll(ctx, db.Database(app.AppName()), dbhailo.M{
 		dbhailo.ConfigColumns.Active: false,
 	})
 }
