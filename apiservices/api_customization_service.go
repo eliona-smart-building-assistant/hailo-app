@@ -39,8 +39,3 @@ func (s *CustomizationApiService) GetDashboardTemplateByName(ctx context.Context
 		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
 }
-
-// GetDashboardTemplateNames - List available dashboard templates
-func (s *CustomizationApiService) GetDashboardTemplateNames(ctx context.Context) (apiserver.ImplResponse, error) {
-	return apiserver.Response(http.StatusOK, []string{"Hailo Smart Waste"}), nil
-}
