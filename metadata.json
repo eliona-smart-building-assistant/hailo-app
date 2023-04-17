@@ -10,5 +10,6 @@
   "dashboardTemplateNames": [
     "Hailo Smart Waste"
   ],
+  "apiSpecificationPath": "/v1/version/openapi.json",
   "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
 }
