@@ -25,6 +25,9 @@ INSERT INTO public.eliona_app (app_name, enable)
 VALUES ('hailo', 't')
     ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
 
+DELETE FROM versioning.patches
+WHERE app_name = 'hailo';
+
 DROP SCHEMA IF EXISTS hailo CASCADE;
 
 DELETE FROM public.heap
