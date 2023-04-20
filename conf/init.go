@@ -26,7 +26,7 @@ import (
 // points to a not existing endpoint and have to be changed.
 func InitConfiguration(connection db.Connection) error {
 	_, err := InsertConfig(context.Background(), apiserver.Configuration{
-		Enable:          common.Ptr(true),
+		Enable:          common.Ptr(false),
 		Description:     common.Ptr("Hailo FDS demo configuration. Please change to your hailo server endpoints and authentication."),
 		IntervalSec:     60,           // 1 minute
 		InactiveTimeout: 12 * 60 * 60, // 12 hours
