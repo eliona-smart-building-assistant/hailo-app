@@ -18,19 +18,20 @@ package hailo
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/eliona-smart-building-assistant/go-utils/http"
-	"github.com/eliona-smart-building-assistant/go-utils/log"
-	"github.com/volatiletech/null/v8"
 	"hailo/apiserver"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/eliona-smart-building-assistant/go-utils/http"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"github.com/volatiletech/null/v8"
 )
 
 const (
 	AuthApiPath          = "/beta/v1/authentication"
 	FdsSpecificationPath = "/specifications"
-	FdsStatusPath        = "/status"
+	FdsStatusPath        = "/statuses"
 	FdsDiagnosticsPath   = "/diagnostics"
 	FdsIdParam           = "/?ids="
 )
@@ -84,10 +85,10 @@ type Status struct {
 		LastEmptyCount int     `json:"last_empty_count"`
 		BinAlarm       bool    `json:"bin_alarm"`
 		// Station
-		AverageBatteryLevel float32  `json:"average_battery_level"`
-		AverageFillingLevel float32  `json:"average_filling_level"`
-		TotalInputsCount    int      `json:"total_inputs_count"`
-		CompStatuses        []Status `json:"component_statuses"`
+		AverageBatteryLevel interface{} `json:"average_battery_level"`
+		AverageFillingLevel interface{} `json:"average_filling_level"`
+		TotalInputsCount    int         `json:"total_inputs_count"`
+		CompStatuses        []Status    `json:"component_statuses"`
 		// Both
 		FillingLevel []struct {
 			Level float32 `json:"level"`
