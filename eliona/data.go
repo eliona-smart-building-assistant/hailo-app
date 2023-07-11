@@ -17,15 +17,17 @@ package eliona
 
 import (
 	"context"
-	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-utils/common"
-	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/apiserver"
 	"hailo/conf"
 	"hailo/hailo"
 	"math"
+	"strconv"
 	"time"
+
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
 func UpsertDataForDevices(config apiserver.Configuration, spec hailo.Spec) error {
@@ -110,10 +112,10 @@ func UpsertDataForStation(config apiserver.Configuration, status hailo.Status) e
 			parseTime(status.Generic.LastContact),
 			*assetId,
 			stationDataPayload{
-				int(status.DeviceTypeSpecific.AverageBatteryLevel * 100),
+				int(interfaceToFloat(status.DeviceTypeSpecific.AverageBatteryLevel) * 100),
 				lastContact,
 				status.DeviceTypeSpecific.TotalInputsCount,
-				int(status.DeviceTypeSpecific.AverageFillingLevel * 100),
+				int(interfaceToFloat(status.DeviceTypeSpecific.AverageFillingLevel) * 100),
 				CheckActivity(config, lastContact),
 			},
 		)
@@ -123,6 +125,22 @@ func UpsertDataForStation(config apiserver.Configuration, status hailo.Status) e
 		}
 	}
 	return nil
+}
+
+func interfaceToFloat(value interface{}) float64 {
+	var fValue float64 = -1
+
+	switch v := value.(type) {
+	case string:
+		fValue, _ = strconv.ParseFloat(v, 32)
+	case int:
+		fValue = (float64)(v)
+	case float32:
+		fValue = (float64)(v)
+	case float64:
+		fValue = v
+	}
+	return fValue
 }
 
 func CheckActivity(connection apiserver.Configuration, lastContact float64) bool {
