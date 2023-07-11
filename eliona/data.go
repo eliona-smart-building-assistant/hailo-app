@@ -59,7 +59,7 @@ func upsertData(subtype api.DataSubtype, time time.Time, assetId int32, payload 
 	statusData.Timestamp = *api.NewNullableTime(&time)
 	statusData.AssetId = assetId
 	statusData.Data = common.StructToMap(payload)
-	err := asset.UpsertDataIfAssetExists[any](statusData)
+	err := asset.UpsertDataIfAssetExists(statusData)
 	if err != nil {
 		log.Error("Hailo", "Error during writing data: %v", err)
 		return err

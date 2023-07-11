@@ -18,6 +18,7 @@ package main
 import (
 	"context"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
+	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/apiserver"
 	"hailo/apiservices"
@@ -56,12 +57,12 @@ func collectData() {
 		if !conf.IsConfigActive(config) {
 			conf.SetConfigActiveState(context.Background(), config, true)
 			log.Info("Hailo", "Collecting %d initialized with config:\n"+
-				"FDS Fds Endpoint: %s\n"+
-				"FDS Fds Auth Server: %s\n"+
+				"FDS Fds Endpoint: %v\n"+
+				"FDS Fds Auth Server: %v\n"+
 				"Auth Timeout: %d\n"+
 				"Request Timeout: %d",
 				config.Id,
-				config.FdsServer,
+				*config.FdsServer,
 				config.AuthServer,
 				config.AuthTimeout,
 				config.RequestTimeout)
@@ -89,12 +90,13 @@ func collectData() {
 // listenApiRequests starts an API server and listen for API requests
 // The API endpoints are defined in the openapi.yaml file
 func listenApiRequests() {
-	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), apiserver.NewRouter(
-		apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
-		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
-		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
-		apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
-	))
+	err := http.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), utilshttp.NewCORSEnabledHandler(
+		apiserver.NewRouter(
+			apiserver.NewAssetMappingApiController(apiservices.NewAssetMappingApiService()),
+			apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
+			apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
+			apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
+		)))
 	log.Fatal("Hailo", "Error in API Server: %v", err)
 }
 
