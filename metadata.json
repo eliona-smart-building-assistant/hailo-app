@@ -2,8 +2,8 @@
   "name": "hailo",
   "elionaMinVersion": "v10.1.0",
   "displayName": {
-    "en": "Hailo app",
-    "de": "Hailo App"
+    "en": "Hailo",
+    "de": "Hailo"
   },
   "description": {
     "en": "The Hailo app enables the Hailo Digital Hub.",
