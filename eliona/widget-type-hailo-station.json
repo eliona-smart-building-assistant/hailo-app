@@ -13,7 +13,6 @@
   "elements": [
     {
       "category": "progress",
-      "description": "Average",
       "config": {
         "variant": "vertical",
         "progressText": "Average level",
@@ -24,7 +23,6 @@
     },
     {
       "category": "radar",
-      "description": "Level bin",
       "config": {
         "showLegend":true
       }
