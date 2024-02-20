@@ -41,28 +41,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Necessary to close used init resources, because db.Pool() is used in this app.
-	defer db.ClosePool()
-
-	// Init the app before the first run.
-	app.Init(db.Pool(), app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
-		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
-		conf.InitConfiguration,
-	)
-
-	// Patch the app to v2.0.0
-	app.Patch(db.Pool(), app.AppName(), "020000",
-		app.ExecSqlFile("conf/v2.0.0.sql"),
-	)
-
-	// Patch the app to v2.0.1
-	app.Patch(db.Pool(), app.AppName(), "020001",
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
-	)
+	// init the app
+	initialization(context.Background())
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.
 	common.WaitForWithOs(
@@ -74,4 +54,31 @@ func main() {
 	_, _ = conf.SetAllConfigsInactive(context.Background())
 
 	log.Info("Hailo", "Terminate the app.")
+}
+
+func initialization(ctx context.Context) {
+
+	// Necessary to close used init resources
+	conn := db.NewInitConnectionWithContextAndApplicationName(ctx, app.AppName())
+	defer conn.Close(ctx)
+
+	// Init the app before the first run.
+	app.Init(conn, app.AppName(),
+		app.ExecSqlFile("conf/init.sql"),
+		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
+		conf.InitConfiguration,
+	)
+
+	// Patch the app to v2.0.0
+	app.Patch(conn, app.AppName(), "020000",
+		app.ExecSqlFile("conf/v2.0.0.sql"),
+	)
+
+	// Patch the app to v2.0.1
+	app.Patch(conn, app.AppName(), "020001",
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
+	)
 }
