@@ -32,6 +32,7 @@ COPY --from=build /app ./
 COPY conf/*.sql ./conf/
 COPY eliona/*.json ./eliona/
 COPY apiserver/openapi.json /
+COPY metadata.json /
 
 ENV APPNAME=hailo
 

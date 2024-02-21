@@ -17,11 +17,7 @@ package main
 
 import (
 	"context"
-	"github.com/eliona-smart-building-assistant/go-eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
-	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/conf"
 	"os"
@@ -41,28 +37,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Necessary to close used init resources, because db.Pool() is used in this app.
-	defer db.ClosePool()
-
-	// Init the app before the first run.
-	app.Init(db.Pool(), app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
-		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
-		conf.InitConfiguration,
-	)
-
-	// Patch the app to v2.0.0
-	app.Patch(db.Pool(), app.AppName(), "020000",
-		app.ExecSqlFile("conf/v2.0.0.sql"),
-	)
-
-	// Patch the app to v2.0.1
-	app.Patch(db.Pool(), app.AppName(), "020001",
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
-	)
+	// Initialize the app
+	initialization()
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.
 	common.WaitForWithOs(
