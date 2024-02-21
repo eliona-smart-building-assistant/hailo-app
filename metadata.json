@@ -14,5 +14,10 @@
   ],
   "apiUrl": "v1",
   "apiSpecificationPath": "/version/openapi.json",
-  "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
+  "useEnvironment": [
+    "CONNECTION_STRING",
+    "INIT_CONNECTION_STRING",
+    "API_ENDPOINT",
+    "API_TOKEN"
+  ]
 }
