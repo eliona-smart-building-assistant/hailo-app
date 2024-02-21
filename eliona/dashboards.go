@@ -28,7 +28,7 @@ func HailoSmartWasteDashboard(projectId string) (api.Dashboard, error) {
 	dashboard.Widgets = []api.Widget{}
 
 	// Process bins
-	bins, _, err := client.NewClient().AssetsApi.
+	bins, _, err := client.NewClient().AssetsAPI.
 		GetAssets(client.AuthenticationContext()).
 		AssetTypeName("Hailo FDS Bin").
 		ProjectId(projectId).
@@ -116,7 +116,7 @@ func HailoSmartWasteDashboard(projectId string) (api.Dashboard, error) {
 	}
 
 	// Process stations
-	stations, _, err := client.NewClient().AssetsApi.
+	stations, _, err := client.NewClient().AssetsAPI.
 		GetAssets(client.AuthenticationContext()).
 		AssetTypeName("Hailo FDS Recycling Station").
 		Expansions([]string{"Asset.childrenInfo"}).

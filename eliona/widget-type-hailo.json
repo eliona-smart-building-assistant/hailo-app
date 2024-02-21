@@ -13,7 +13,6 @@
   "elements": [
     {
       "category": "progress",
-      "description": "Level",
       "config": {
         "variant": "vertical",
         "progressText": "Level",
@@ -23,7 +22,6 @@
     },
     {
       "category": "value",
-      "description": "Last emptying",
       "config": {
         "variant": "small",
         "valueCount": 1
@@ -31,7 +29,6 @@
     },
     {
       "category": "value",
-      "description": "Expected emptying",
       "config": {
         "variant": "small",
         "valueCount": 1
@@ -39,7 +36,6 @@
     },
     {
       "category": "value",
-      "description": "Battery level",
       "config": {
         "variant": "small",
         "valueCount": 0
