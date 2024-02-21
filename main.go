@@ -17,11 +17,7 @@ package main
 
 import (
 	"context"
-	"github.com/eliona-smart-building-assistant/go-eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
-	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/conf"
 	"os"
@@ -41,8 +37,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	// init the app
-	initialization(context.Background())
+	// Initialize the app
+	initialization()
 
 	// Starting the service to collect the data for each configured Hailo Smart Hub.
 	common.WaitForWithOs(
@@ -54,31 +50,4 @@ func main() {
 	_, _ = conf.SetAllConfigsInactive(context.Background())
 
 	log.Info("Hailo", "Terminate the app.")
-}
-
-func initialization(ctx context.Context) {
-
-	// Necessary to close used init resources
-	conn := db.NewInitConnectionWithContextAndApplicationName(ctx, app.AppName())
-	defer conn.Close(ctx)
-
-	// Init the app before the first run.
-	app.Init(conn, app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
-		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
-		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
-		conf.InitConfiguration,
-	)
-
-	// Patch the app to v2.0.0
-	app.Patch(conn, app.AppName(), "020000",
-		app.ExecSqlFile("conf/v2.0.0.sql"),
-	)
-
-	// Patch the app to v2.0.1
-	app.Patch(conn, app.AppName(), "020001",
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
-		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
-	)
 }

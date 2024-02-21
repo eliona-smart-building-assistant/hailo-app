@@ -17,7 +17,11 @@ package main
 
 import (
 	"context"
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/db"
 	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/apiserver"
@@ -28,6 +32,34 @@ import (
 	"net/http"
 	"time"
 )
+
+func initialization() {
+	ctx := context.Background()
+
+	// Necessary to close used init resources
+	conn := db.NewInitConnectionWithContextAndApplicationName(ctx, app.AppName())
+	defer conn.Close(ctx)
+
+	// Init the app before the first run.
+	app.Init(conn, app.AppName(),
+		app.ExecSqlFile("conf/init.sql"),
+		asset.InitAssetTypeFile("eliona/asset-type-bin.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-digital-hub.json"),
+		asset.InitAssetTypeFile("eliona/asset-type-recycling-station.json"),
+		conf.InitConfiguration,
+	)
+
+	// Patch the app to v2.0.0
+	app.Patch(conn, app.AppName(), "020000",
+		app.ExecSqlFile("conf/v2.0.0.sql"),
+	)
+
+	// Patch the app to v2.0.1
+	app.Patch(conn, app.AppName(), "020001",
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo.json"),
+		dashboard.InitWidgetTypeFile("eliona/widget-type-hailo-station.json"),
+	)
+}
 
 // collectData collects data based on the configured FDS endpoints in table hailo.config. For each FDS endpoint the
 // data is collected in a separate thread. These threads wait until the configured interval time is over. Afterwards
