@@ -21,7 +21,7 @@ info:
   description: API to access and configure the Hailo app
 externalDocs:
   description: Find out more about the Hailo app
-  url: https://github.com/eliona-smart-building-assistant/hailo-app
+  url: https://doc.eliona.io/collection/eliona-english/eliona-apps/apps/hailo
 servers:
   - url: http://hailo/v1
 
@@ -45,7 +45,6 @@ tags:
     description: API version
 
 paths:
-
   /configs:
     get:
       tags:
@@ -61,7 +60,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Configuration'
+                  $ref: "#/components/schemas/Configuration"
     post:
       tags:
         - Configuration
@@ -72,14 +71,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Configuration'
+              $ref: "#/components/schemas/Configuration"
       responses:
         201:
           description: Successfully created a new Hailo FDS endpoint
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
 
   /configs/{config-id}:
     get:
@@ -88,7 +87,7 @@ paths:
       summary: Get FDS endpoint
       description: Gets information about the FDS endpoint with the given id
       parameters:
-        - $ref: '#/components/parameters/config-id'
+        - $ref: "#/components/parameters/config-id"
       operationId: getConfigurationById
       responses:
         200:
@@ -96,34 +95,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
     put:
       tags:
         - Configuration
       summary: Updates an FDS endpoint
       description: Updates an FDS endpoint.
       parameters:
-        - $ref: '#/components/parameters/config-id'
+        - $ref: "#/components/parameters/config-id"
       operationId: putConfigurationById
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Configuration'
+              $ref: "#/components/schemas/Configuration"
       responses:
         200:
           description: Successfully updates a Hailo FDS endpoint
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
     delete:
       tags:
         - Configuration
       summary: Deletes a FDS endpoint
       description: Removes information about the FDS endpoint with the given id
       parameters:
-        - $ref: '#/components/parameters/config-id'
+        - $ref: "#/components/parameters/config-id"
       operationId: deleteConfigurationById
       responses:
         204:
@@ -152,7 +151,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AssetMapping'
+                  $ref: "#/components/schemas/AssetMapping"
 
   /dashboard-templates/{dashboard-template-name}:
     get:
@@ -185,7 +184,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/main/openapi.yaml#/components/schemas/Dashboard'
+                $ref: "https://raw.githubusercontent.com/eliona-smart-building-assistant/eliona-api/main/openapi.yaml#/components/schemas/Dashboard"
         404:
           description: Template with name not found
 
@@ -204,7 +203,6 @@ paths:
               schema:
                 type: object
 
-
   /version/openapi.json:
     get:
       summary: OpenAPI specification for this API version
@@ -221,9 +219,7 @@ paths:
                 type: object
 
 components:
-
   parameters:
-
     config-id:
       name: config-id
       in: path
@@ -236,7 +232,6 @@ components:
         example: 4711
 
   schemas:
-
     Configuration:
       type: object
       description: Each configuration defines access to an Hailo FDS endpoint with configurable timeouts and polling intervals. Each FDS endpoint delivers information about a set of Hailo smart devices.
