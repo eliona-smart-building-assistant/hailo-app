@@ -23,7 +23,7 @@ import (
 )
 
 // InitConfiguration creates a default configuration to demonstrate how the eliona app should be configured. This configuration
-// points to a not existing endpoint and have to be changed.
+// points to a not existing endpoint and has to be changed.
 func InitConfiguration(connection db.Connection) error {
 	_, err := InsertConfig(context.Background(), apiserver.Configuration{
 		Enable:          common.Ptr(false),
