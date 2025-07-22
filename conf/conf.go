@@ -1,4 +1,3 @@
-
 //  This file is part of the eliona project.
 //  Copyright © 2022 LEICOM iTEC AG. All Rights Reserved.
 //  ______ _ _
@@ -18,6 +17,9 @@ package conf
 
 import (
 	"context"
+	"hailo/apiserver"
+	dbhailo "hailo/db/hailo"
+
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
@@ -25,8 +27,6 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/types"
-	"hailo/apiserver"
-	dbhailo "hailo/db/hailo"
 )
 
 const DefaultInactiveTimeout = 60 * 60 * 24 // time until set a container to inactive (sec)
@@ -105,6 +105,7 @@ func apiConfigFromDbConfig(dbConfig *dbhailo.Config) *apiserver.Configuration {
 	apiConfig.Id = &dbConfig.AppID
 	apiConfig.AssetId = dbConfig.AssetID.Ptr()
 	apiConfig.Enable = dbConfig.Enable.Ptr()
+	apiConfig.Active = dbConfig.Active.Ptr()
 	apiConfig.Description = dbConfig.Description.Ptr()
 	apiConfig.InactiveTimeout = getInactiveTimeout(dbConfig)
 	var fdsConfig FdsConfig
@@ -125,6 +126,7 @@ func dbConfigFromApiConfig(apiConfig *apiserver.Configuration) *dbhailo.Config {
 	dbConfig.AppID = null.Int64FromPtr(apiConfig.Id).Int64
 	dbConfig.AssetID = null.Int32FromPtr(apiConfig.AssetId)
 	dbConfig.Enable = null.BoolFromPtr(apiConfig.Enable)
+	dbConfig.Active = null.BoolFromPtr(apiConfig.Active)
 	dbConfig.Description = null.StringFromPtr(apiConfig.Description)
 	dbConfig.InactiveTimeout = null.Int32From(apiConfig.InactiveTimeout)
 	dbConfig.AuthTimeout = apiConfig.AuthTimeout

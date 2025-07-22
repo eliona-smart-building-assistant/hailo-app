@@ -80,8 +80,8 @@ func collectData() {
 
 		// Skip config if disabled and set inactive
 		if !conf.IsConfigEnabled(config) {
-			log.Debug("app", "config %+v is not enabled", config)
 			if conf.IsConfigActive(config) {
+				log.Debug("app", "config %+v is not enabled", config)
 				log.Debug("app", "inactivating config")
 				if _, err := conf.SetConfigActiveState(context.Background(), config, false); err != nil {
 					log.Error("config", "inactivating config %v: %v", config.Id, err)
