@@ -17,13 +17,6 @@ package main
 
 import (
 	"context"
-	"github.com/eliona-smart-building-assistant/go-eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
-	"github.com/eliona-smart-building-assistant/go-utils/common"
-	"github.com/eliona-smart-building-assistant/go-utils/db"
-	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
-	"github.com/eliona-smart-building-assistant/go-utils/log"
 	"hailo/apiserver"
 	"hailo/apiservices"
 	"hailo/conf"
@@ -31,6 +24,14 @@ import (
 	"hailo/hailo"
 	"net/http"
 	"time"
+
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/db"
+	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
+	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
 func initialization() {
@@ -79,15 +80,21 @@ func collectData() {
 
 		// Skip config if disabled and set inactive
 		if !conf.IsConfigEnabled(config) {
+			log.Debug("app", "config %+v is not enabled", config)
 			if conf.IsConfigActive(config) {
-				conf.SetConfigActiveState(context.Background(), config, false)
+				log.Debug("app", "inactivating config")
+				if _, err := conf.SetConfigActiveState(context.Background(), config, false); err != nil {
+					log.Error("config", "inactivating config %v: %v", config.Id, err)
+				}
 			}
 			continue
 		}
 
 		// Signals, that this config is active
 		if !conf.IsConfigActive(config) {
-			conf.SetConfigActiveState(context.Background(), config, true)
+			if _, err := conf.SetConfigActiveState(context.Background(), config, true); err != nil {
+				log.Error("config", "activating config %v: %v", config.Id, err)
+			}
 			log.Info("Hailo", "Collecting %d initialized with config:\n"+
 				"FDS Fds Endpoint: %v\n"+
 				"FDS Fds Auth Server: %v\n"+
